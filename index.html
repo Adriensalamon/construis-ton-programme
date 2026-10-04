@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Construis ton programme</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1D2430; --paper:#FAFAF8; --panel:#FFFFFF; --soft:#EEF0F3; --rule:#D6D9DE; --muted:#5F6B7A;
+  --pos:#0E7C86; --neg:#C2570C; --pos-soft:#CDE6E8; --neg-soft:#F5D8C5; --sel-bg:#1D2430; --sel-fg:#FAFAF8;
+  --ui:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#E8EAEE; --paper:#14181F; --panel:#1B212B; --soft:#222A36; --rule:#2E3643; --muted:#9AA4B2;
+    --pos:#4DC3CE; --neg:#F08A4B; --pos-soft:#17434A; --neg-soft:#4A2E1B; --sel-bg:#E8EAEE; --sel-fg:#14181F;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#E8EAEE; --paper:#14181F; --panel:#1B212B; --soft:#222A36; --rule:#2E3643; --muted:#9AA4B2;
+  --pos:#4DC3CE; --neg:#F08A4B; --pos-soft:#17434A; --neg-soft:#4A2E1B; --sel-bg:#E8EAEE; --sel-fg:#14181F;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.55}
+button,input,textarea,select{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--ui);margin:0;line-height:1.15;letter-spacing:-0.01em}
+a{color:inherit}
+
+.wrap{max-width:1120px;margin:0 auto;padding:20px 20px 96px}
+.top{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:14px;border-bottom:1px solid var(--rule);margin-bottom:28px}
+.brand{font-family:var(--ui);font-weight:700;font-size:17px;letter-spacing:-0.01em}
+.top .meta{font-family:var(--ui);font-size:14px;color:var(--muted)}
+.shell{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:48px;align-items:start}
+.shell.solo{grid-template-columns:minmax(0,1fr)}
+main{min-width:0}
+
+/* intro */
+.hero h1{font-size:clamp(34px,5.2vw,56px);font-weight:700;max-width:14ch;margin-bottom:18px}
+.hero p.lead{font-size:19px;max-width:56ch;margin:0 0 14px}
+.hero p.neutral{max-width:56ch;color:var(--muted);margin:0 0 28px;font-size:16px}
+.fieldset{border:0;padding:0;margin:0 0 26px}
+.fieldset legend{font-family:var(--ui);font-weight:600;font-size:18px;padding:0;margin-bottom:6px}
+.fieldset .hint{color:var(--muted);font-size:15px;margin:0 0 10px;max-width:60ch}
+
+/* boutons */
+.btn{font-family:var(--ui);font-weight:600;font-size:16px;border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);padding:11px 20px;cursor:pointer;border-radius:2px}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:hover{opacity:.9}
+.btn:focus-visible,.opt input:focus-visible+.box,summary:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--pos);outline-offset:2px}
+.btnrow{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px}
+
+/* progression */
+.prog{margin-bottom:22px}
+.prog .row{display:flex;justify-content:space-between;align-items:center;gap:12px;font-family:var(--ui);font-size:14px;color:var(--muted);margin-bottom:8px}
+.prog select{background:var(--panel);border:1px solid var(--rule);padding:6px 8px;border-radius:2px;max-width:60%}
+.bar{height:4px;background:var(--soft);position:relative}
+.bar i{position:absolute;left:0;top:0;bottom:0;background:var(--ink)}
+
+/* questions */
+.theme-title{font-size:clamp(28px,4vw,40px);font-weight:700;margin-bottom:24px}
+.q{margin:0 0 40px}
+.q h3{font-size:21px;font-weight:600;margin-bottom:8px}
+.ctx{margin:0 0 14px;max-width:64ch;color:var(--ink)}
+.ctx small{display:block;color:var(--muted);font-size:14px;margin-top:6px}
+.kind{font-family:var(--ui);font-size:14px;color:var(--muted);margin:0 0 6px}
+.opts{border-top:1px solid var(--rule)}
+.opt{display:flex;gap:14px;align-items:flex-start;padding:13px 6px;border-bottom:1px solid var(--rule);cursor:pointer}
+.opt:hover{background:var(--soft)}
+.opt.on{background:var(--soft)}
+.sr{position:absolute;opacity:0;width:1px;height:1px}
+.box{flex:0 0 22px;height:22px;border:2px solid var(--ink);margin-top:3px;position:relative;background:var(--panel)}
+.opt.on .box::before,.opt.on .box::after{content:"";position:absolute;left:50%;top:50%;width:18px;height:2.5px;background:var(--ink);transform-origin:center}
+.opt.on .box::before{transform:translate(-50%,-50%) rotate(45deg)}
+.opt.on .box::after{transform:translate(-50%,-50%) rotate(-45deg)}
+.otxt{display:block}
+.olabel{display:block;font-size:17px}
+.chips{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:3px;font-family:var(--ui);font-size:13.5px}
+.chip.pos{color:var(--pos);font-weight:600}
+.chip.neg{color:var(--neg);font-weight:600}
+.chip.nc,.chip.once{color:var(--muted)}
+.conf{font-weight:400;color:var(--muted)}
+.onote{display:block;color:var(--muted);font-size:14.5px;margin-top:2px}
+.pass{font-family:var(--ui);font-size:14.5px;color:var(--muted);background:none;border:0;padding:8px 0 0;cursor:pointer;text-decoration:underline}
+details.note{margin-top:8px}
+details.note summary{font-family:var(--ui);font-size:14.5px;color:var(--muted);cursor:pointer}
+details.note textarea{width:100%;margin-top:8px;padding:10px;background:var(--panel);border:1px solid var(--rule);border-radius:2px;font-family:var(--serif);font-size:16px;resize:vertical}
+
+.nav{display:flex;justify-content:space-between;gap:12px;margin-top:8px;padding-top:20px;border-top:1px solid var(--rule)}
+
+/* balance */
+.balance{position:sticky;top:calc(16px + env(safe-area-inset-top,0px));font-family:var(--ui)}
+.balance h2{font-size:15px;font-weight:600;color:var(--muted);margin-bottom:8px}
+.solde{font-size:42px;font-weight:700;line-height:1;margin:0 0 4px;letter-spacing:-0.02em}
+.solde.neg{color:var(--neg)} .solde.pos{color:var(--pos)}
+.solde span{display:block;font-size:16px;font-weight:400;color:var(--muted);letter-spacing:0;margin:6px 0 0}
+.ruler{position:relative;height:74px;margin:14px 0 6px}
+.axis{position:absolute;left:0;right:0;top:26px;height:1px;background:var(--rule)}
+.tick{position:absolute;top:21px;width:1px;height:11px;background:var(--rule)}
+.tick b{position:absolute;top:14px;left:50%;transform:translateX(-50%);font-weight:400;font-size:11.5px;color:var(--muted);white-space:nowrap}
+.zero{position:absolute;top:8px;bottom:22px;width:2px;background:var(--ink)}
+.zero em{position:absolute;top:-2px;left:6px;font-style:normal;font-size:11.5px;color:var(--ink);white-space:nowrap}
+.target{position:absolute;top:8px;bottom:22px;width:0;border-left:2px dashed var(--muted)}
+.target em{position:absolute;top:-2px;right:6px;font-style:normal;font-size:11.5px;color:var(--muted);white-space:nowrap}
+.range{position:absolute;top:19px;height:14px;display:flex}
+.range i{display:block;height:100%}
+.range i.p{background:var(--pos)} .range i.n{background:var(--neg)}
+.facts{margin:10px 0 0;padding:0;font-size:14.5px}
+.facts div{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-top:1px solid var(--rule)}
+.facts dt{color:var(--muted)} .facts dd{margin:0;font-weight:600;text-align:right}
+.tgt{font-size:14.5px;color:var(--muted);margin:10px 0 0}
+.alerts{list-style:none;margin:12px 0 0;padding:0;font-size:14.5px}
+.alerts li{padding:8px 0;border-top:1px solid var(--rule)}
+.bal-toggle{display:none}
+
+/* bilan */
+.sec{margin:0 0 26px}
+.sec h3{font-size:19px;margin-bottom:6px}
+.sec p{margin:0 0 6px;max-width:68ch}
+.pillbar{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}
+.box2{border:1px solid var(--rule);padding:14px 16px;background:var(--panel);margin:0 0 14px}
+.box2 h4{font-family:var(--ui);font-size:16px;margin:0 0 6px}
+.box2 ul{margin:0;padding-left:18px}
+.box2 li{margin:4px 0}
+.fiche{border-top:1px solid var(--rule);padding:10px 0}
+.fiche summary{font-family:var(--ui);font-weight:600;cursor:pointer;font-size:17px}
+.fiche dl{margin:10px 0 0}
+.fiche dt{font-family:var(--ui);font-weight:600;font-size:14.5px;color:var(--muted);margin-top:10px}
+.fiche dd{margin:2px 0 0;max-width:66ch}
+.aibox{margin-top:10px;white-space:pre-wrap;font-size:16px;max-width:66ch}
+.aiwarn{font-family:var(--ui);font-size:13.5px;color:var(--muted);margin-top:6px}
+.foot{margin:48px 0 0;padding-top:16px;border-top:1px solid var(--rule);font-family:var(--ui);font-size:13.5px;color:var(--muted);max-width:76ch}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);font-family:var(--ui);font-size:15px;padding:10px 16px;border-radius:2px;z-index:50}
+
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .wrap{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
+  .balance{position:fixed;left:0;right:0;bottom:0;top:auto;background:var(--panel);border-top:2px solid var(--ink);z-index:20;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));max-height:76vh;overflow:auto}
+  .balance .full{display:none}
+  .solde{font-size:34px}
+  .balance.open .full{display:block}
+  .bal-toggle{display:flex;width:100%;justify-content:space-between;align-items:center;background:none;border:0;padding:4px 0;cursor:pointer}
+  .bal-toggle .s{font-size:22px;font-weight:700}
+  .bal-toggle .s.neg{color:var(--neg)} .bal-toggle .s.pos{color:var(--pos)}
+  .bal-toggle .l{font-size:13.5px;color:var(--muted)}
+  .balance > h2,.balance > .solde,.balance > .ruler-wrap-desktop{display:none}
+}
+@media (prefers-reduced-motion:no-preference){
+  .range i{transition:width .35s ease}
+  .range{transition:left .35s ease}
+}
+@media print{
+  .balance,.nav,.btnrow,.top .meta,.no-print{display:none !important}
+  body{background:#fff;color:#000}
+  .shell{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><span class="brand">Construis ton programme</span><span class="meta" id="topmeta"></span></div>
+  <div id="app"></div>
+  <p class="foot">Outil de réflexion personnelle, pas un conseil de vote. Montants : ordres de grandeur annuels d'octobre 2026, avec leur niveau de confiance (sourcé, estimé ou hypothèse). Tes réponses restent dans ton navigateur ; seule l'analyse facultative par Claude envoie le texte de la mesure choisie.</p>
+</div>
+<div id="toast" class="toast" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+"use strict";
+/* ===================== DONNÉES ===================== */
+var THEMES = [
+  "Travail et pouvoir d'achat","Retraites","Santé, grand âge et fin de vie","École","Fiscalité","Dépense publique et dette",
+  "Sécurité, justice et prisons","Drogues","Logement","Immigration","Europe, défense et commerce",
+  "Économie, énergie et agriculture","Écologie","Institutions et territoires","Rôle de l'État et inégalités","Laïcité et identité"
+];
+
+function o(id, t, p, x){ var r = x || {}; r.id = id; r.t = t; r.p = p; return r; }
+
+var QS = [
+{ id:"q1_1", th:0, type:"multi", quick:true, title:"Comment faire progresser le pouvoir d'achat ?",
+  ctx:"Plusieurs leviers coexistent : baisser les prélèvements sur le travail, augmenter les salaires par la loi, baisser les prix de produits essentiels, ou aider de façon ciblée. Les prélèvements obligatoires français comptent parmi les plus élevés de l'OCDE (à vérifier), ce qui nourrit l'argument pour baisser les charges ; les défenseurs d'une hausse des salaires citent la stagnation du pouvoir d'achat de certains ménages.",
+  src:"Un point de CSG représente environ 17 Md€ (estimation).",
+  opts:[
+    o("a","Augmenter les salaires par la loi (salaire minimum, partage des profits)","Les salaires augmentent par la loi : hausse du salaire minimum et partage des profits.",{tags:["pouvoir_achat"],n:"Coût supporté surtout par les entreprises, non chiffré ici.",nc:true}),
+    o("b","Baisser les cotisations des salariés (environ 0,6 point)","Nous baissons les charges qui pèsent sur les salariés (environ 0,6 point de cotisations).",{d:[10,10],tags:["pouvoir_achat","baisse_charges"],n:"Estimation à partir de 17 Md€ par point de CSG."}),
+    o("c","Baisser les prix de produits essentiels (TVA, énergie, carburants)","Nous baissons la TVA ou les taxes sur des produits essentiels (énergie, carburants).",{tags:["pouvoir_achat","baisse_tva"],n:"Perte de recettes non chiffrée.",nc:true}),
+    o("d","Aides ciblées pour les bas revenus (prime d'activité, chèques)","Nous renforçons les aides ciblées pour les bas revenus (prime d'activité, chèques).",{tags:["pouvoir_achat"],nc:true})
+  ]},
+{ id:"q1_2", th:0, type:"single", title:"Temps de travail",
+  ctx:"Les 35 heures sont un repère depuis 2000. Les défenseurs d'une réduction citent la qualité de vie et le partage du travail ; ceux d'un assouplissement, la compétitivité et la liberté de négocier branche par branche.",
+  opts:[
+    o("a","Réduire la durée du travail (32 heures, quatre jours)","La durée du travail est réduite (32 heures ou quatre jours).",{}),
+    o("b","Garder les 35 heures","Les 35 heures sont maintenues.",{sq:true}),
+    o("c","Assouplir : heures supplémentaires négociées par branche","Les 35 heures sont assouplies : les heures supplémentaires se négocient par branche.",{})
+  ]},
+{ id:"q1_3", th:0, type:"single", title:"Chômage et emploi",
+  ctx:"Une indemnisation plus courte et dégressive réduit la dépense et vise un retour plus rapide à l'emploi ; une indemnisation plus généreuse protège les revenus pendant la recherche d'emploi. Les effets budgétaires ne sont pas chiffrés ici.",
+  opts:[
+    o("a","Durée plus courte, montants dégressifs et contrôles renforcés, avec les économies réinvesties pour les chômeurs de longue durée","L'assurance chômage devient plus courte et dégressive, avec des contrôles renforcés ; les économies financent un meilleur accompagnement des chômeurs de longue durée.",{nc:true}),
+    o("b","Statu quo","L'assurance chômage reste inchangée.",{sq:true}),
+    o("c","Plus généreux et sécurisé (sécurité sociale professionnelle)","L'assurance chômage devient plus généreuse, avec une sécurité sociale professionnelle.",{nc:true}),
+    o("d","L'État employeur en dernier ressort (emploi garanti)","L'État garantit un emploi aux chômeurs de longue durée.",{nc:true})
+  ]},
+
+{ id:"q2_1", th:1, type:"single", quick:true, title:"Règle de départ à la retraite",
+  ctx:"La loi de 2023 prévoyait 64 ans en 2030 et 43 ans de cotisation. Selon des sources de fin septembre 2026 (à vérifier), elle est suspendue : âge légal de 62 ans et 9 mois, 42,5 ans de cotisation. Reculer de 62 à 64 ans rapporte environ 10 Md€ par an (COR), mais un Français sur deux arrive à la retraite sans emploi. Une règle fondée sur la durée avantage ceux qui ont commencé tôt ; ses critiques citent les carrières hachées, les longues études et les femmes.",
+  opts:[
+    o("a","60 ans","L'âge de départ est ramené à 60 ans.",{tags:["ret_60"],n:"Coût élevé, non chiffré ici.",nc:true}),
+    o("b","62 ans","L'âge de départ est fixé à 62 ans.",{sq:true}),
+    o("c","64 ans ou plus (par exemple 65 à 67 ans)","L'âge de départ est reculé progressivement à 65 ou 67 ans.",{r:[10,15],tags:["ret_tard"],fiche:"retraite",n:"Hypothèse : extrapolation du COR, avant coûts de chômage et d'invalidité."}),
+    o("d","Pas d'âge légal : départ dès que la durée de cotisation est atteinte (45 ans, sans âge plancher)","Il n'y a plus d'âge légal : on part dès que la durée de cotisation est atteinte, relevée progressivement à 45 ans, sans âge plancher.",{r:[5,15],tags:["ret_tard","ret_duree"],fiche:"retraite",n:"Hypothèse large, sans chiffrage sourcé."})
+  ]},
+{ id:"q2_2", th:1, type:"single", title:"Financement de la retraite",
+  ctx:"Une part de capitalisation coûte cher pendant la transition : les actifs paient à la fois les retraités actuels et leur propre épargne (environ 20 Md€ par an pendant une dizaine d'années pour 25 %, à vérifier). Les défenseurs de la répartition citent la solidarité entre générations ; ceux de la capitalisation, la diversification et la soutenabilité.",
+  opts:[
+    o("a","Répartition renforcée par de nouvelles cotisations (patronales, revenus du capital)","Le système par répartition est renforcé par de nouvelles cotisations (patronales, revenus du capital).",{nc:true}),
+    o("b","Répartition avec une part de capitalisation (environ 10 %)","Une part de la retraite (environ 10 %) est financée par capitalisation, en montée progressive.",{d:[8,8],tags:["capitalisation"],n:"Transition temporaire (une dizaine d'années). Hypothèse proportionnelle à 20 Md€ pour 25 %."}),
+    o("c","Capitalisation importante (25 %)","Un quart de la retraite est financé par capitalisation.",{d:[20,20],tags:["capitalisation"],n:"Transition temporaire (une dizaine d'années), à vérifier."}),
+    o("d","Répartition inchangée, équilibrée par l'âge ou la durée de départ","La répartition reste inchangée, équilibrée par l'âge ou la durée de départ.",{sq:true})
+  ]},
+{ id:"q2_3", th:1, type:"single", title:"Pensions actuelles",
+  ctx:"Indexer les pensions sur l'inflation protège le pouvoir d'achat des retraités. Une sous-indexation de 0,4 point par an économise environ 2,3 Md€ la première année, avec un effet cumulatif.",
+  opts:[
+    o("a","Revalorisées au-delà de l'inflation","Les pensions sont revalorisées au-delà de l'inflation.",{nc:true}),
+    o("b","Indexées sur l'inflation","Les pensions restent indexées sur l'inflation.",{sq:true}),
+    o("c","Sous-indexées ou gelées (par exemple 0,4 point par an)","Les pensions progressent un peu moins vite que l'inflation (0,4 point par an).",{r:[2.3,2.3],tags:["sous_indexation"]})
+  ]},
+
+{ id:"q3_1", th:2, type:"single", title:"Moyens de l'hôpital",
+  ctx:"La France dépense 11,8 % du PIB en santé contre 10,2 % en moyenne dans l'Union (hôpital : 3,7 % contre 3,3 %). Le vieillissement ajoute environ 16 Md€ de dépenses de santé en 2030 et 32 Md€ en 2040 par rapport à 2023 : les économies d'organisation ne compensent pas cette hausse.",
+  opts:[
+    o("a","Pas de hausse","Les moyens de l'hôpital restent inchangés.",{sq:true}),
+    o("b","Rattrapage ciblé (+3 Md€ par an)","Nous investissons dans les hôpitaux et le temps des soignants : +3 Md€ par an.",{d:[3,3],n:"Hypothèse d'enveloppe."}),
+    o("c","Hausse nette des effectifs et des salaires des soignants (+6 Md€ par an)","Nous recrutons et revalorisons les soignants : +6 Md€ par an.",{d:[6,6],n:"Hypothèse d'enveloppe."}),
+    o("d","Plan massif (+10 Md€ par an)","Nous lançons un plan massif pour l'hôpital : +10 Md€ par an.",{d:[10,10],n:"Hypothèse d'enveloppe."})
+  ]},
+{ id:"q3_2", th:2, type:"multi", quick:true, title:"Remboursements et maîtrise des dépenses de santé",
+  ctx:"Ici, « aisés » désigne les 10 % de personnes au niveau de vie supérieur à 46 960 € par unité de consommation (Insee, 2023). Les Français ne consultent pas plus que la moyenne (5,5 consultations par habitant). L'OCDE estime qu'environ un cinquième des dépenses de santé n'améliore pas la santé, surtout des examens redondants et des prescriptions injustifiées. Les défenseurs de plus de moyens citent les tensions hospitalières ; ceux d'une responsabilisation, le poids des dépenses.",
+  opts:[
+    o("a","Mieux rembourser (dents, optique, suppression des franchises)","Nous remboursons mieux les soins (dents, optique) et supprimons les franchises.",{nc:true,tags:["rembourser_plus"],n:"Coût non chiffré ici."}),
+    o("b","Délai de carence de 7 jours pour les arrêts maladie","Le délai de carence des arrêts maladie passe à 7 jours.",{r:[1,1]}),
+    o("c","Lutter contre la fraude à l'Assurance maladie","La lutte contre la fraude à l'Assurance maladie est renforcée.",{r:[0.4,0.4]}),
+    o("d","Chirurgie sans nuitée de 63 % à 80 % des séjours","La chirurgie sans nuitée passe de 63 % à 80 % des séjours.",{r:[0.8,0.8]}),
+    o("e","Ajuster les remboursements de confort (cures thermales, médicaments peu efficaces) selon l'avis de la Haute Autorité de santé","Les remboursements de confort sont ajustés selon l'avis de la Haute Autorité de santé.",{r:[0.2,0.2],n:"Cures thermales : environ 350 M€ ; un projet de 2025 a été abandonné."}),
+    o("f","Franchises médicales multipliées par 5 pour les 10 % de personnes les plus aisées","Les franchises médicales sont multipliées par cinq pour les 10 % de personnes les plus aisées.",{tags:["contrib_sante"],group:"aises_sante"}),
+    o("i","Contribution santé annuelle de 0,5 % du niveau de vie pour les 10 % de personnes les plus aisées","Les 10 % de personnes les plus aisées versent une contribution santé annuelle de 0,5 % de leur niveau de vie.",{tags:["contrib_sante"],group:"aises_sante"}),
+    o("g","Analyser les données pour repérer les prescriptions injustifiées","Les prescriptions injustifiées sont repérées par l'analyse des données de l'Assurance maladie.",{nc:true}),
+    o("h","Bonus de prise en charge pour les personnes qui pratiquent un sport","Un bonus de prise en charge récompense la pratique sportive.",{nc:true,n:"Preuve, équité et données de santé à trancher."})
+  ]},
+{ id:"q3_3", th:2, type:"single", title:"Dépendance et grand âge",
+  ctx:"Le vieillissement fait monter les besoins de prise en charge de la perte d'autonomie. Les options diffèrent selon qui paie : cotisation ou impôt, assurance obligatoire, revenus et patrimoine de la personne.",
+  opts:[
+    o("a","Grande branche publique de l'autonomie, financée par cotisation ou impôt","Une branche publique de l'autonomie, financée par cotisation ou impôt, prend en charge la dépendance.",{tags:["nouveau_prelevement"],nc:true}),
+    o("b","Assurance dépendance obligatoire mutualisée","Une assurance dépendance obligatoire et mutualisée finance la perte d'autonomie.",{tags:["nouveau_prelevement"],nc:true}),
+    o("c","Reste à charge selon les revenus et le patrimoine","Le reste à charge de la dépendance dépend des revenus et du patrimoine.",{nc:true}),
+    o("d","Contribution dédiée élargie","Une contribution dédiée à l'autonomie est élargie.",{tags:["nouveau_prelevement"],nc:true})
+  ]},
+{ id:"q3_4", th:2, type:"single", title:"Fin de vie",
+  ctx:"Sujet éthique. Les défenseurs d'une aide active à mourir invoquent l'autonomie et la dignité ; ses opposants, la protection des personnes vulnérables et le risque de pressions. Cette mesure ne doit pas être présentée comme une économie.",
+  opts:[
+    o("a","Ne pas changer la loi","La loi sur la fin de vie reste inchangée.",{sq:true}),
+    o("b","Clarifier les directives anticipées et la sédation profonde","Les directives anticipées et la sédation profonde sont clarifiées.",{}),
+    o("c","Aide active à mourir pour une maladie incurable en phase avancée","L'accès à la fin de vie est simplifié pour les personnes atteintes d'une maladie incurable en phase avancée.",{}),
+    o("d","Élargir aux souffrances psychiques insupportables","L'aide active à mourir est élargie aux souffrances psychiques insupportables.",{})
+  ]},
+
+{ id:"q4_1", th:3, type:"single", title:"Professeurs : salaires et postes",
+  ctx:"Environ 1,7 million d'élèves de moins d'ici 2035 : suivre cette baisse permettrait de supprimer jusqu'à 53 000 postes d'ici 2034, soit environ 3,4 Md€. Une hausse de 10 % des salaires coûte environ 3,6 Md€ par an. Mais une classe ne perd pas 2 % de professeur quand elle perd 2 % d'élèves.",
+  opts:[
+    o("a","Pas de hausse générale ; primes ciblées (postes difficiles, mérite)","Pas de hausse générale des salaires des professeurs ; des primes ciblées récompensent les postes difficiles et le mérite.",{}),
+    o("b","+10 %, financés par la baisse du nombre de postes","Les professeurs sont mieux payés (+10 %), financés par la baisse du nombre de postes liée à la démographie.",{d:[3.6,3.6],r:[3.4,3.4],n:"Économie atteinte à terme (2034)."}),
+    o("c","+10 %, sans réduire le nombre de postes (classes moins chargées)","Les professeurs sont mieux payés (+10 %) et les postes sont maintenus pour alléger les classes.",{d:[3.6,3.6]}),
+    o("d","+20 % ou plus","Les professeurs voient leur salaire augmenter de 20 % ou plus.",{d:[7.2,7.2],n:"Hypothèse : le double de +10 %."})
+  ]},
+{ id:"q4_2", th:3, type:"multi", quick:true, title:"Mixité, choix de l'école et financement",
+  ctx:"Les camps divergent sur la mixité, le choix de l'école et le financement : carte scolaire stricte et places financées dans le privé pour des élèves défavorisés, liberté de choix (chèque éducation), participation des familles aisées au financement de l'école publique. Repères : environ 12,4 millions d'élèves, dont 10,2 millions dans le public ; un élève coûte en moyenne 10 470 € ; le privé sous contrat coûte à la famille de 430 € (maternelle) à 1 249 € (lycée) par an, et 40 % de ses élèves viennent de familles très favorisées (Cour des comptes). Ici, « aisées » désigne les 10 % de personnes au niveau de vie supérieur à 46 960 € par unité de consommation (Insee, 2023).",
+  opts:[
+    o("a","Mixité renforcée (carte scolaire stricte, places financées par l'État dans le privé pour des élèves défavorisés)","La mixité est renforcée : carte scolaire stricte et places financées par l'État dans les établissements privés pour des élèves défavorisés.",{tags:["quota_national"],nc:true}),
+    o("b","Liberté de choix de l'école (chèque éducation, plus de liberté pour le privé)","Les familles choisissent librement leur école (chèque éducation, plus de liberté pour le privé).",{nc:true}),
+    o("c","Les 10 % de familles les plus aisées paient 50 % des frais de scolarité du privé sous contrat (environ 350 € par enfant)","Les 10 % de familles les plus aisées participent au financement de l'école publique à hauteur de 50 % des frais de scolarité d'un établissement privé sous contrat (environ 350 € par enfant).",{tags:["quota_national","participation_ecole"],group:"aises_ecole"}),
+    o("e","Les 10 % de familles les plus aisées paient 50 % du coût réel d'un élève du privé sous contrat (environ 3 000 € par enfant)","Les 10 % de familles les plus aisées participent au financement de l'école publique à hauteur de 50 % du coût réel d'un élève du privé sous contrat (environ 3 000 € par enfant).",{tags:["quota_national","participation_ecole"],group:"aises_ecole"}),
+    o("d","Statu quo","L'organisation de l'école reste inchangée.",{sq:true})
+  ]},
+{ id:"q4_3", th:3, type:"single", title:"Contenu et autorité à l'école",
+  ctx:"Les camps divergent sur le fond autant que sur les moyens : savoirs fondamentaux et évaluations, autorité et discipline, pédagogie et bien-être.",
+  opts:[
+    o("a","Recentrer sur les savoirs fondamentaux (lire, écrire, compter), avec évaluations régulières","L'école se recentre sur les savoirs fondamentaux, avec des évaluations régulières.",{}),
+    o("b","Autorité et discipline renforcées (uniforme, sanctions)","L'autorité et la discipline sont renforcées (uniforme, sanctions).",{}),
+    o("c","Pédagogie et bien-être, moins de notation","L'école privilégie la pédagogie et le bien-être, avec moins de notation.",{}),
+    o("d","Statu quo","Le contenu de l'école reste inchangé.",{sq:true})
+  ]},
+
+{ id:"q5_1", th:4, type:"single", title:"TVA et impôts sur la consommation",
+  ctx:"Un point de TVA sur tous les taux rapporte entre 4 et 11 Md€ selon les estimations (Insee : environ 4 Md€ par point du taux normal ; Terra Nova : environ 11 Md€ pour un point sur tous les taux) et pèse davantage sur les revenus modestes. Une baisse ciblée soutient le pouvoir d'achat mais réduit les recettes.",
+  opts:[
+    o("a","Baisser la TVA (produits de première nécessité, énergie)","La TVA est baissée sur les produits de première nécessité et l'énergie.",{tags:["baisse_tva"],nc:true,n:"Perte de recettes non chiffrée."}),
+    o("b","Inchangée","La TVA reste inchangée.",{sq:true}),
+    o("c","+1 point de TVA","La TVA augmente d'un point.",{r:[4,11],tags:["tva_plus"],fiche:"tva",n:"Estimations divergentes (4 à 11 Md€) : écart non réconcilié."})
+  ]},
+{ id:"q5_2", th:4, type:"single", quick:true, title:"Revenus et patrimoine des plus aisés",
+  ctx:"Les camps divergent : rétablir un impôt sur la fortune ou taxer les milliardaires, statu quo, ou alléger l'impôt sur le capital. Les effets sur l'investissement et le départ de contribuables sont débattus ; les rendements dépendent de la conception de l'impôt (à chercher).",
+  opts:[
+    o("a","Taxer davantage (tranches supérieures, impôt sur les très hauts patrimoines)","Les hauts revenus et les très hauts patrimoines sont davantage taxés.",{tags:["taxer_capital"],nc:true}),
+    o("b","Statu quo","La fiscalité des hauts revenus et patrimoines reste inchangée.",{sq:true}),
+    o("c","Alléger (impôt sur le capital, taux unique)","L'impôt sur le capital est allégé.",{tags:["patrimoine_allege"],nc:true})
+  ]},
+{ id:"q5_3", th:4, type:"single", title:"Héritage",
+  ctx:"Les droits de succession et de donation rapportent environ 21 Md€. Taxer le top 1 % dès 2 M€ rapporterait environ 15 Md€ (Legifiscal) ; au-delà de 12 M€, environ 2,8 Md€. L'exonération des entreprises familiales réduit la recette.",
+  opts:[
+    o("a","Supprimer ou alléger fortement les droits de succession","Les droits de succession sont supprimés ou fortement allégés.",{nc:true}),
+    o("b","Statu quo","Les droits de succession restent inchangés.",{sq:true}),
+    o("c","Top 1 % (dès 2 M€) davantage taxé, entreprises familiales exonérées","Les héritages du top 1 % (à partir de 2 millions d'euros) sont davantage taxés, avec exonération des entreprises familiales.",{r:[3,15],tags:["heritage_haut"],n:"Fourchette large selon le périmètre."}),
+    o("d","Top 1 % (dès 2 M€) davantage taxé, sans exonération","Les héritages du top 1 % (à partir de 2 millions d'euros) sont davantage taxés, sans exonération spécifique.",{r:[15,15],tags:["heritage_haut"]})
+  ]},
+{ id:"q5_4", th:4, type:"multi", title:"Entreprises et niches fiscales",
+  ctx:"Les niches fiscales coûtent 88,3 Md€ ; une baisse de 10 % rapporterait plus de 8 Md€, mais elles comprennent le crédit d'impôt recherche (environ 8 Md€) et l'emploi à domicile (environ 7 Md€). Les aides aux entreprises varient de 82 à 187 Md€ selon la définition.",
+  opts:[
+    o("a","Réduire les niches fiscales de 10 %","Les niches fiscales sont réduites de 10 %.",{r:[4,8],tags:["cuts_niches"]}),
+    o("b","Réduire les aides aux entreprises de 5 %","Les aides aux entreprises sont réduites de 5 %.",{r:[4,4],group:"aides",n:"Estimation sur le périmètre étroit (82 Md€)."}),
+    o("c","Réduire les aides aux entreprises de 10 %","Les aides aux entreprises sont réduites de 10 %.",{r:[8,8],group:"aides",n:"Estimation sur le périmètre étroit (82 Md€)."}),
+    o("d","Baisser les impôts de production et l'impôt sur les sociétés","Les impôts de production et l'impôt sur les sociétés sont baissés.",{nc:true}),
+    o("e","Conditionner les aides aux entreprises (emploi, climat)","Les aides aux entreprises sont conditionnées à des critères d'emploi et de climat.",{}),
+    o("f","Taxer davantage les superprofits et les dividendes","Les superprofits et les dividendes sont davantage taxés.",{tags:["taxer_capital"],nc:true})
+  ]},
+
+{ id:"q6_1", th:5, type:"single", quick:true, title:"Cap pour les finances publiques",
+  ctx:"La dette atteint environ 3 595 Md€ (119 % du PIB) et les intérêts coûtent entre 59 et 74 Md€ par an. La France dépense 9,3 points de PIB de plus que le reste de la zone euro (environ 280 Md€), dont deux tiers en protection sociale. Les camps divergent : réduire la dépense, augmenter les recettes, ou investir d'abord.",
+  opts:[
+    o("a","Réduire la dépense publique","Le redressement des comptes passe d'abord par la réduction de la dépense publique.",{}),
+    o("b","Augmenter les recettes (hauts revenus, capital, grandes entreprises)","Le redressement des comptes passe d'abord par plus de recettes (hauts revenus, capital, grandes entreprises).",{}),
+    o("c","Les deux","Le redressement des comptes combine réduction de la dépense et hausse des recettes.",{}),
+    o("d","Investir d'abord et accepter plus de déficit si l'investissement rapporte à terme","L'investissement passe d'abord, quitte à accepter plus de déficit s'il rapporte à terme.",{})
+  ]},
+{ id:"q6_2", th:5, type:"multi", title:"Mesures d'économies sur le fonctionnement",
+  ctx:"Les doublons administratifs n'expliquent qu'une petite partie de l'écart de dépenses. Repères : le millefeuille État-collectivités coûte au moins 7,5 Md€ de coordination ; il existe 434 opérateurs de l'État et 701 organismes divers ; les achats des collectivités pourraient économiser jusqu'à 5 Md€. Attention aux doubles comptes.",
+  opts:[
+    o("a","Année blanche (gel des barèmes)","Les barèmes sont gelés pendant un an (année blanche).",{r:[4,4],n:"Montant net du recoupement avec la sous-indexation des pensions."}),
+    o("b","Gel des dépenses de l'État hors défense","Les dépenses de l'État hors défense sont gelées.",{r:[5,5],n:"Montant net du recoupement avec l'année blanche."}),
+    o("c","Freiner la hausse des dépenses des collectivités","La hausse des dépenses des collectivités est freinée.",{r:[5,5],tags:["collectivites"]}),
+    o("d","Fusionner ou supprimer des opérateurs, clarifier les compétences, mutualiser les achats","Les opérateurs en doublon sont fusionnés ou supprimés, les compétences entre l'État et les collectivités clarifiées et les achats mutualisés.",{r:[3,7],tags:["doublons"],n:"Hypothèse prudente, surtout après 2030."}),
+    o("e","Renforcer la lutte contre la fraude fiscale et sociale","La lutte contre la fraude fiscale et sociale est renforcée.",{nc:true}),
+    o("f","Clause d'extinction automatique des agences et niches sans évaluation favorable","Toute agence ou niche fiscale disparaît au bout de cinq ans sans évaluation favorable.",{}),
+    o("g","Afficher le coût réel des services publics aux usagers","Le coût réel des services publics est affiché aux usagers (ordonnances, relevés de remboursement, bulletins scolaires).",{n:"Mesure symbolique, effet à tester."})
+  ]},
+{ id:"q6_3", th:5, type:"single", title:"Actifs de l'État",
+  ctx:"Les participations de l'État valent 209 Md€, dont 68 Md€ de sociétés cotées. Rembourser 10 Md€ de dette économise seulement 0,2 à 0,4 Md€ d'intérêts par an, moins les dividendes perdus. L'or de la Banque de France (environ 295 Md€) est très difficile à vendre ; les collections publiques sont inaliénables.",
+  opts:[
+    o("a","Vendre des participations non stratégiques pour rembourser la dette (environ 20 Md€)","L'État vend environ 20 milliards d'euros d'actifs non stratégiques et consacre tout le produit à la dette.",{once:20}),
+    o("b","Garder et gérer (dividendes)","L'État conserve ses participations.",{sq:true}),
+    o("c","Étendre le contrôle public (renationaliser des secteurs stratégiques)","Le contrôle public est étendu : des secteurs stratégiques sont renationalisés.",{nc:true,n:"Coût de rachat non chiffré."}),
+    o("d","Vendre plus largement","L'État vend largement ses participations.",{nc:true})
+  ]},
+
+{ id:"q7_1", th:6, type:"multi", quick:true, title:"Sécurité et justice : priorités",
+  ctx:"Police et gendarmerie coûtent environ 25 Md€ par an et les prisons sont en surpopulation. Les camps divergent sur la part de la prévention, de la sanction et du contrôle de l'action policière.",
+  opts:[
+    o("a","Plus de police et de présence sur le terrain","La police dispose de plus de moyens et d'une présence accrue sur le terrain.",{}),
+    o("b","Sanctions plus sévères (peines minimales, plus de places de prison)","Les sanctions sont plus sévères : peines minimales et plus de places de prison.",{}),
+    o("c","Prévention et éducation, présence sociale dans les quartiers","La prévention et la présence éducative et sociale dans les quartiers sont renforcées.",{}),
+    o("d","Justice plus rapide, tribunaux mieux équipés","La justice est plus rapide et les tribunaux mieux équipés.",{}),
+    o("e","Contrôle renforcé de l'action policière (police des polices)","Le contrôle de l'action policière est renforcé (police des polices).",{}),
+    o("f","Travail et formation en détention pour la réinsertion","Le travail et la formation en détention, y compris dans le tertiaire et le numérique, sont développés pour la réinsertion.",{})
+  ]},
+{ id:"q7_2", th:6, type:"single", title:"Enveloppe supplémentaire pour la sécurité et la justice",
+  ctx:"Au-delà des priorités cochées plus haut, dont le coût est déjà compté. Les enveloppes ci-dessous sont des hypothèses à ajuster.",
+  opts:[
+    o("a","Pas de hausse","",{sq:true}),
+    o("b","+1,5 Md€ par an","La sécurité et la justice reçoivent 1,5 Md€ de plus par an.",{d:[1.5,1.5]}),
+    o("c","+3 Md€ par an","La sécurité et la justice reçoivent 3 Md€ de plus par an.",{d:[3,3]}),
+    o("d","+5 Md€ par an","La sécurité et la justice reçoivent 5 Md€ de plus par an.",{d:[5,5]})
+  ]},
+
+{ id:"q8_1", th:7, type:"single", quick:true, title:"Drogues : cadre général",
+  ctx:"Le marché illicite pèse environ 6,8 Md€ de chiffre d'affaires en 2023 (OFDT), dont environ 3,1 pour la cocaïne et 2,7 pour le cannabis. Les défenseurs de la répression invoquent la santé publique et l'ordre public ; ceux de la légalisation, l'affaiblissement des réseaux et la santé publique.",
+  opts:[
+    o("a","Répression renforcée (moyens contre les trafics, amendes pour les consommateurs)","La répression des trafics et de la consommation est renforcée.",{nc:true,tags:["repression"]}),
+    o("b","Statu quo","La politique en matière de drogues reste inchangée.",{sq:true}),
+    o("c","Dépénaliser l'usage","L'usage de drogues est dépénalisé.",{}),
+    o("d","Légaliser et encadrer certaines drogues","Certaines drogues sont légalisées et encadrées.",{tags:["legalise"]})
+  ]},
+{ id:"q8_2", th:7, type:"single", quick:true, title:"Si légalisation : quelles drogues ?",
+  showIf:function(a){ return (a.q8_1||[]).indexOf("d")>=0; },
+  ctx:"Au Canada, le marché noir du cannabis survit si la taxe est trop forte. Aucun pays n'a légalisé la cocaïne, et les conventions de l'ONU en limitent l'usage aux fins médicales. Le montant net pour l'État est une hypothèse : le chiffre d'affaires du marché n'est pas une recette publique.",
+  opts:[
+    o("a","Cannabis seul","Le cannabis est légalisé, vendu de façon encadrée.",{nc:true,fiche:"drogues",n:"Montant net non chiffré."}),
+    o("b","Cannabis et cocaïne","Le cannabis et la cocaïne, environ 85 % de la valeur du marché illégal, sont légalisés et vendus par l'État, avec des produits fabriqués en coentreprise avec des laboratoires français. Une partie des recettes finance le suivi des addictions, la protection de l'enfance, la psychologie et l'éducation.",{r:[1,3],tags:["legalise_coca"],fiche:"drogues",n:"Hypothèse non sourcée : 1 à 3 Md€ nets."}),
+    o("c","Toutes les drogues","Toutes les drogues sont légalisées et encadrées.",{r:[1,3],tags:["legalise_coca"],fiche:"drogues",n:"Hypothèse non sourcée : 1 à 3 Md€ nets."})
+  ]},
+
+{ id:"q9_1", th:8, type:"multi", title:"Logement : priorités",
+  ctx:"Le logement est le premier poste de dépense des ménages et pèse sur le pouvoir d'achat, la mobilité et la natalité. Les camps divergent sur la construction (privée ou publique), la régulation des loyers et les règles d'attribution du logement social.",
+  opts:[
+    o("a","Construire plus (simplifier normes et permis)","Nous construisons plus en simplifiant les normes et les permis.",{}),
+    o("b","Logement social massif (construction publique, quotas)","Nous lançons un plan massif de logement social.",{nc:true}),
+    o("c","Aider la demande (APL, aides à l'achat)","Les aides à la demande (APL, aides à l'achat) sont renforcées.",{nc:true}),
+    o("d","Encadrer les loyers et les locations touristiques","Les loyers et les locations touristiques sont encadrés.",{}),
+    o("e","Rénover le parc (passoires thermiques)","La rénovation des passoires thermiques est accélérée.",{nc:true}),
+    o("f","Revoir les règles d'attribution du logement social","Les règles d'attribution du logement social sont revues.",{})
+  ]},
+
+{ id:"q10_1", th:9, type:"single", quick:true, title:"Immigration : niveau global",
+  ctx:"Sujet contesté. Les défenseurs d'un accueil plus large invoquent le droit d'asile, les besoins de main-d'œuvre et la démographie ; ceux d'une réduction, les capacités d'accueil (logement, école, services), la sécurité et la cohésion. Contraintes : droit européen, Conseil constitutionnel, CEDH.",
+  opts:[
+    o("a","Accueillir davantage (régularisation large, accueil inconditionnel)","Nous accueillons davantage, avec une régularisation large et un accueil inconditionnel.",{tags:["immig_ouvrir"]}),
+    o("b","Maintenir le niveau actuel","Les règles d'immigration actuelles sont maintenues.",{sq:true}),
+    o("c","Réduire modérément (quotas par métier en tension, conditions plus strictes)","L'immigration est réduite modérément : quotas par métier en tension et conditions plus strictes.",{}),
+    o("d","Réduire fortement (fin du regroupement familial, priorité nationale, restriction du droit du sol)","L'immigration est fortement réduite : fin du regroupement familial, priorité nationale, restriction du droit du sol.",{tags:["immig_reduire"]})
+  ]},
+{ id:"q10_2", th:9, type:"single", title:"Régularisation des personnes en situation irrégulière",
+  ctx:"Une durée de présence courte régularise plus vite mais prête à l'accusation d'appel d'air ; une durée longue est moins critiquée mais laisse plus longtemps des personnes sans statut.",
+  opts:[
+    o("a","Large et automatique après une durée de présence","Les personnes en situation irrégulière sont régularisées après une durée de présence.",{}),
+    o("b","Liée à un emploi (contrat de travail et durée de présence à fixer)","Une régularisation est possible avec un contrat de travail et une durée de présence.",{}),
+    o("c","Au cas par cas","La régularisation se fait au cas par cas.",{}),
+    o("d","Aucune régularisation","Il n'y a pas de régularisation.",{})
+  ]},
+
+{ id:"q11_1", th:10, type:"single", quick:true, title:"Rapport à l'Union européenne",
+  ctx:"Les camps divergent sur la répartition des compétences entre la France et l'Union européenne.",
+  opts:[
+    o("a","Intégration renforcée (budget commun, défense commune)","L'intégration européenne est renforcée (budget commun, défense commune).",{}),
+    o("b","Statu quo","Le rapport à l'Union européenne reste inchangé.",{sq:true}),
+    o("c","Europe des nations : plus de souveraineté nationale dans certains domaines","La souveraineté nationale est renforcée dans certains domaines (immigration, agriculture, budget).",{}),
+    o("d","Renégocier les traités, voire sortir de certaines règles ou de l'Union","Les traités européens sont renégociés, et la France se libère de certaines règles.",{tags:["sortie_ue"]})
+  ]},
+{ id:"q11_2", th:10, type:"single", title:"Défense et alliances",
+  ctx:"Le budget des armées est de 57,1 Md€ en 2026, avec 36 Md€ de plus prévus sur 2026-2030. Les camps divergent sur l'OTAN et sur la place de l'Union européenne dans la défense.",
+  opts:[
+    o("a","Maintien du budget","Le budget des armées est maintenu.",{sq:true}),
+    o("b","Hausse forte (+7 à 9 Md€ par an)","Le budget des armées augmente fortement.",{d:[7,9]}),
+    o("c","Hausse et industrie de défense européenne","Le budget des armées augmente et nous construisons une industrie de défense européenne.",{d:[7,9]}),
+    o("d","Autonomie ou non-alignement (sortie du commandement intégré de l'OTAN)","La France sort du commandement intégré de l'OTAN et affirme son autonomie.",{nc:true})
+  ]},
+{ id:"q11_3", th:10, type:"single", title:"Commerce international",
+  ctx:"Le Mercosur est applicable provisoirement depuis le 1er mai 2026 (la France s'y est opposée, notamment sur l'agriculture) ; l'accord avec l'Inde a été conclu en janvier 2026. Ces accords apportent environ +0,1 % de croissance par an (estimation citée) : l'enjeu est surtout la résilience. La politique commerciale relève de l'Union européenne.",
+  opts:[
+    o("a","Libre-échange et accords (Inde, Australie, Mexique, Indonésie, Mercosur)","La France soutient les accords de libre-échange (Inde, Australie, Mexique, Indonésie, Mercosur).",{tags:["libre_echange"]}),
+    o("b","Accords sélectifs avec protections agricoles","La France soutient des accords sélectifs, avec des protections agricoles.",{}),
+    o("c","Protectionnisme (droits de douane, préférence européenne ou nationale)","La France met en place des droits de douane et une préférence européenne ou nationale.",{}),
+    o("d","Remettre en cause certains accords existants","La France remet en cause certains accords commerciaux existants.",{})
+  ]},
+
+{ id:"q12_1", th:11, type:"single", title:"Recherche et innovation",
+  ctx:"Aucune réforme ne règle à elle seule la croissance : productivité, énergie, investissement et compétences comptent. Les enveloppes ci-dessous sont des hypothèses.",
+  opts:[
+    o("a","Pas de hausse","",{sq:true}),
+    o("b","+2 Md€ par an","La recherche reçoit 2 Md€ de plus par an.",{d:[2,2],tags:["recherche_plus"]}),
+    o("c","+4 Md€ par an","La recherche reçoit 4 Md€ de plus par an.",{d:[4,4],tags:["recherche_plus"]}),
+    o("d","+7 Md€ par an","La recherche reçoit 7 Md€ de plus par an.",{d:[7,7],tags:["recherche_plus"]})
+  ]},
+{ id:"q12_2", th:11, type:"single", title:"Énergie",
+  ctx:"Les camps divergent sur le mix énergétique : place du nucléaire, de l'éolien et du solaire, propriété publique ou privée.",
+  opts:[
+    o("a","Nucléaire et renouvelables","Le mix énergétique repose sur le nucléaire et les renouvelables.",{}),
+    o("b","Surtout nucléaire (limiter l'éolien)","Le mix énergétique repose surtout sur le nucléaire, en limitant l'éolien.",{}),
+    o("c","Surtout renouvelables, avec sortie progressive du nucléaire","Le mix énergétique repose surtout sur les renouvelables, avec sortie progressive du nucléaire.",{})
+  ]},
+{ id:"q12_3", th:11, type:"multi", title:"Agriculture",
+  ctx:"Les camps divergent entre soutien aux revenus, transition des pratiques, protection commerciale et allègement des normes.",
+  opts:[
+    o("a","Soutenir les revenus agricoles","Les revenus des agriculteurs sont soutenus.",{tags:["agri_soutien"],nc:true}),
+    o("b","Transition des pratiques (agroécologie, moins de pesticides)","La transition des pratiques agricoles est soutenue (agroécologie, moins de pesticides).",{nc:true}),
+    o("c","Protection commerciale","L'agriculture bénéficie d'une protection commerciale.",{}),
+    o("d","Allègement des normes","Les normes agricoles sont allégées.",{})
+  ]},
+
+{ id:"q13_1", th:12, type:"single", quick:true, title:"Écologie : approche",
+  ctx:"Les camps divergent sur la méthode : contrainte et investissement public, incitations, adaptation, sobriété. Chiffre ces mesures par une recherche si tu le peux.",
+  opts:[
+    o("a","Volontariste : interdictions et investissement public massif","L'écologie est volontariste : interdictions et investissement public massif.",{nc:true}),
+    o("b","Incitations : aides, marché du carbone, innovation","L'écologie passe par les incitations : aides, marché du carbone, innovation.",{}),
+    o("c","Pragmatique : s'adapter, limiter les contraintes (zones à faibles émissions, normes)","L'écologie est pragmatique : adaptation et contraintes limitées (zones à faibles émissions, normes).",{}),
+    o("d","Sobriété : réduire la consommation et la production","L'écologie repose sur la sobriété : réduire la consommation et la production.",{})
+  ]},
+
+{ id:"q14_1", th:13, type:"single", title:"Régime politique",
+  ctx:"Les camps divergent sur l'équilibre entre exécutif, parlement et démocratie directe.",
+  opts:[
+    o("a","Ve République inchangée","Les institutions de la Ve République sont conservées.",{sq:true}),
+    o("b","Exécutif renforcé","L'exécutif est renforcé.",{}),
+    o("c","Plus de parlementarisme et de démocratie directe (proportionnelle, référendum d'initiative citoyenne)","Les institutions donnent plus de place au parlement et à la démocratie directe (proportionnelle, référendum d'initiative citoyenne).",{}),
+    o("d","Une autre République","Nous instaurons une nouvelle République.",{})
+  ]},
+{ id:"q14_2", th:13, type:"single", title:"Exemplarité des élus",
+  ctx:"Il y a 925 parlementaires. L'indemnité brute d'un député est de 7 637 € par mois ; la mission « Pouvoirs publics » coûte 1 140 M€ en 2026. Une baisse de 20 % du nombre de parlementaires, de leurs indemnités et des budgets de fonctionnement rapporte de l'ordre de 0,2 à 0,4 Md€ : l'effet est symbolique. Réserves : attractivité de la fonction et représentation des territoires.",
+  opts:[
+    o("a","Aucune réduction","",{sq:true}),
+    o("b","Réduire de 20 % le nombre de parlementaires, leurs indemnités et les budgets de fonctionnement","Le nombre de parlementaires baisse de 20 %, comme leurs indemnités, celles des ministres et les budgets de fonctionnement.",{r:[0.2,0.4]}),
+    o("c","Réduire seulement le nombre de ministres et de cabinets","Le nombre de ministres et de cabinets est réduit.",{})
+  ]},
+{ id:"q14_3", th:13, type:"single", title:"Décentralisation",
+  ctx:"Plus de pouvoir local rapproche les décisions des citoyens ; un cadre national fort garantit l'égalité entre territoires.",
+  opts:[
+    o("a","Plus de pouvoir aux mairies","Les mairies gagnent du pouvoir et le niveau national en perd.",{tags:["mairies"]}),
+    o("b","Cadre national fort","Le cadre national reste fort pour garantir l'égalité entre territoires.",{}),
+    o("c","Équilibre : égalité, justice et défense au national, le reste au local","L'égalité, la justice et la défense restent nationales ; le reste est décidé localement.",{tags:["mairies"]})
+  ]},
+
+{ id:"q15_1", th:14, type:"single", quick:true, title:"Rôle de l'État et services publics",
+  ctx:"C'est la question de fond derrière beaucoup d'autres : que doit faire l'État, avec quel niveau de redistribution.",
+  opts:[
+    o("a","Renforcer et étendre les services publics (gratuité, nationalisations)","Les services publics sont renforcés et étendus (gratuité de certains services, nationalisations).",{nc:true}),
+    o("b","Maintenir et moderniser","Les services publics sont maintenus et modernisés.",{sq:true}),
+    o("c","Réduire (délégation au privé, privatisations)","Le périmètre des services publics est réduit (délégation au privé, privatisations).",{}),
+    o("d","Recentrer sur les missions régaliennes","L'État se recentre sur ses missions régaliennes.",{})
+  ]},
+{ id:"q15_2", th:14, type:"single", title:"Inégalités",
+  ctx:"Les camps divergent sur la justice sociale : redistribution, égalité des chances, mérite, lutte contre la pauvreté.",
+  opts:[
+    o("a","Réduire fortement par la redistribution (impôts, salaires)","Les inégalités sont fortement réduites par la redistribution (impôts, salaires).",{}),
+    o("b","Égalité des chances (éducation, mobilité)","L'égalité des chances (éducation, mobilité) est la priorité.",{}),
+    o("c","Récompenser le travail et le mérite, limiter la redistribution","Le travail et le mérite sont récompensés, et la redistribution est limitée.",{}),
+    o("d","Priorité aux plus fragiles (lutte contre la pauvreté)","La lutte contre la pauvreté est prioritaire.",{})
+  ]},
+{ id:"q15_3", th:14, type:"multi", title:"Aides sociales",
+  ctx:"Les camps divergent sur les conditions d'accès aux aides : sans condition, conditionnées à une activité, à une durée de résidence ou à la nationalité, ou versées automatiquement.",
+  opts:[
+    o("a","Sans condition particulière","Les aides sociales sont versées sans condition particulière.",{}),
+    o("b","Conditionnées à une activité ou une formation","Les aides sociales sont conditionnées à une activité ou une formation.",{}),
+    o("c","Conditionnées à une durée de résidence ou à la nationalité","Les aides sociales sont conditionnées à une durée de résidence ou à la nationalité.",{}),
+    o("d","Versées automatiquement pour réduire le non-recours","Les aides sociales sont versées automatiquement pour réduire le non-recours.",{})
+  ]},
+
+{ id:"q16_1", th:15, type:"single", quick:true, title:"Laïcité",
+  ctx:"Sujet contesté. Contraintes : Constitution, loi de 1905, CEDH. Les camps divergent sur la place du religieux dans l'espace public.",
+  opts:[
+    o("a","Renforcer (interdire davantage de signes religieux dans l'espace public)","La laïcité est renforcée : davantage de signes religieux sont interdits dans l'espace public.",{}),
+    o("b","Maintenir le cadre actuel","Le cadre actuel de la laïcité est maintenu.",{sq:true}),
+    o("c","Assouplir (plus de liberté d'expression religieuse, accommodements)","La laïcité est assouplie : plus de liberté d'expression religieuse et d'accommodements.",{})
+  ]},
+{ id:"q16_2", th:15, type:"single", title:"Intégration",
+  ctx:"Les camps divergent sur la façon de réussir l'intégration : exigences (langue, valeurs), accès à l'emploi et aux droits, reconnaissance de la diversité.",
+  opts:[
+    o("a","Exigences fortes (langue, valeurs, adhésion à la culture nationale)","L'intégration repose sur des exigences fortes (langue, valeurs, adhésion à la culture nationale).",{}),
+    o("b","Intégration par l'emploi, le logement et l'accès aux droits","L'intégration passe par l'emploi, le logement et l'accès aux droits.",{}),
+    o("c","Reconnaissance de la diversité des cultures","L'intégration reconnaît la diversité des cultures.",{})
+  ]}
+];
+
+
+/* ===================== CHIFFRAGES COMPLÉMENTAIRES (octobre 2026) =====================
+   conf : "sourcé" = chiffre direct d'une source ; "estimé" = fourchette tirée de plusieurs sources ou d'un calcul ;
+   "hypothèse" = ordre de grandeur sans source solide. Les montants sont annuels, en Md€, par rapport à la politique actuelle. */
+var CHIFFRAGE = {
+  "q1_1.a":{ n:"Le coût pour l'État est limité (fonction publique) ; le coût principal pèse sur les entreprises, non chiffré ici." },
+  "q1_1.c":{ d:[10,17], conf:"estimé", n:"TVA de 20 % à 5,5 % sur l'énergie : 10 Md€ (Institut Montaigne : 8 à 12) à 17 Md€ (Bercy). Les produits de première nécessité ne sont pas inclus." },
+  "q1_3.a":{ r:[1,4], conf:"estimé", n:"Dégressivité et durée réduite : environ 3 Md€ (IFRAP) à 4 Md€ (objectif du gouvernement en 2024), surtout pour l'Unédic." },
+  "q2_1.a":{ d:[30,43], conf:"estimé", n:"Institut Montaigne (2022) : 36 Md€ pour le retour de l'âge, jusqu'à 43 Md€ avec la durée de cotisation. Des sources politiques avancent jusqu'à 85 Md€." },
+  "q2_1.c":{ conf:"hypothèse" },
+  "q2_1.d":{ conf:"hypothèse" },
+  "q2_2.a":{ r:[3,30], conf:"hypothèse", n:"Assujettir les revenus financiers des entreprises aux cotisations : environ 30 Md€ selon ses défenseurs (non vérifié). Effets sur l'investissement débattus." },
+  "q2_2.b":{ conf:"hypothèse" },
+  "q2_2.c":{ conf:"hypothèse" },
+  "q2_3.a":{ d:[4,4], conf:"estimé", n:"Environ 4 Md€ par point de revalorisation supplémentaire (1 % de 401 Md€ de pensions, COR 2025)." },
+  "q2_3.c":{ conf:"sourcé" },
+  "q3_1.b":{ conf:"hypothèse" }, "q3_1.c":{ conf:"hypothèse" }, "q3_1.d":{ conf:"hypothèse" },
+  "q3_2.a":{ d:[2.5,2.5], conf:"sourcé", n:"Supprimer les franchises et participations forfaitaires : 2,5 Md€ en 2025 (Cour des comptes). Les soins dentaires et l'optique ne sont pas inclus dans cette estimation." },
+  "q3_2.b":{ conf:"sourcé" }, "q3_2.c":{ conf:"sourcé" }, "q3_2.d":{ conf:"sourcé" }, "q3_2.e":{ conf:"estimé" },
+  "q3_2.g":{ r:[0.4,0.8], conf:"estimé", n:"Objectif de l'Assurance maladie : environ 0,8 Md€ sur la pertinence des soins. Recoupe en partie d'autres lignes de santé." },
+  "q3_2.h":{ r:[0.25,1.3], conf:"hypothèse", n:"Dépenses évitées selon la hausse de la pratique (étude citée). Le coût du bonus n'est pas déduit ; preuve, équité et données de santé à trancher." },
+  "q3_3.a":{ d:[6,9], conf:"estimé", n:"Besoin de financement public supplémentaire : 6,2 Md€ en 2024 et 9,2 Md€ en 2030 (rapport Libault). Le financement reste à trouver : il n'est pas compté en recette." },
+  "q3_3.b":{ n:"Le coût serait porté par les ménages (primes), pas par le budget de l'État ; le besoin est de 6 à 9 Md€ (rapport Libault)." },
+  "q3_3.c":{ n:"Le reste à charge en EHPAD est d'environ 1 800 € par mois en moyenne ; l'effet budgétaire n'est pas chiffré." },
+  "q3_3.d":{ d:[6,9], conf:"estimé", n:"Besoin de financement public supplémentaire : 6,2 Md€ en 2024 et 9,2 Md€ en 2030 (rapport Libault). Le financement reste à trouver : il n'est pas compté en recette." },
+  "q4_1.d":{ conf:"hypothèse" },
+  "q4_2.c":{ r:[0.2,0.5], conf:"hypothèse", n:"Calcul indicatif : environ 0,8 million d'élèves du public dans les 10 % aisés (hypothèse) × 50 % des frais de scolarité du privé sous contrat (430 à 1 249 € selon le niveau, Cour des comptes), soit 215 à 625 €. Risque juridique : gratuité de l'enseignement public (préambule de 1946), à vérifier." },
+  "q4_2.e":{ r:[1,2.3], conf:"hypothèse", n:"Calcul indicatif : environ 0,8 million d'élèves × 50 % du coût réel d'un élève du privé sous contrat (environ 6 000 €, hypothèse), moins des pertes de 0 à 50 % (familles qui passent au privé, exonérations). Si des familles passent au privé, la mixité baisse mais l'État économise environ 5 000 € par élève. Risque juridique important (gratuité de l'enseignement public)." },
+  "q3_2.f":{ r:[0.7,1.3], conf:"hypothèse", n:"Calcul indicatif : franchises et participations forfaitaires = 2,5 Md€ en 2025 (Cour des comptes), soit environ 47 € par adulte ; ×5 pour environ 5,3 millions d'adultes des 10 % aisés (hypothèse), cela ajoute environ 1 Md€. Les contrats « responsables » des complémentaires ne peuvent pas les rembourser." },
+  "q3_2.i":{ r:[1.5,2.5], conf:"hypothèse", n:"Calcul indicatif : environ 6,8 millions de personnes dans les 10 % les plus aisés (niveau de vie moyen d'environ 65 000 € par unité de consommation, Insee 2021) × 0,5 % = environ 325 € par personne, soit environ 2,2 Md€. C'est un prélèvement de type CSG : plus simple à collecter, plus lourd politiquement." },
+  "q4_2.a":{ d:[0.1,0.3], conf:"hypothèse", n:"Calcul indicatif non sourcé : quelques dizaines de milliers de places à environ 9 000 € chacune." },
+  "q5_1.a":{ d:[10,17], conf:"estimé", n:"Énergie à 5,5 % : 10 à 17 Md€ selon l'Institut Montaigne et Bercy. Les produits de première nécessité ne sont pas inclus." },
+  "q5_2.a":{ r:[2,25], conf:"estimé", n:"Très débattu. Taxe sur les patrimoines de plus de 100 M€ : 5 à 25 Md€ (15 à 25 pour ses défenseurs ; 2 à 3 selon l'IFRAP après les impôts déjà payés). ISF rétabli : environ 2 à 3 Md€ de plus que l'IFI (5,1 Md€ en 2017, 2,7 Md€ en 2024)." },
+  "q5_2.c":{ d:[2,3], conf:"hypothèse", n:"Supprimer l'IFI coûterait environ 2,7 Md€ (2024). Les autres allègements du capital ne sont pas chiffrés." },
+  "q5_3.a":{ d:[10,21], conf:"estimé", n:"Les droits de succession et de donation rapportent environ 21 Md€ : une suppression les ferait disparaître, un allègement fort en perdrait environ la moitié (calcul)." },
+  "q5_4.d":{ d:[4,10], conf:"hypothèse", n:"Supprimer la C3S coûterait environ 4,4 Md€ nets (Conseil des prélèvements obligatoires) ; la surtaxe d'IS des grandes entreprises rapporte environ 5 Md€ en 2027." },
+  "q5_4.f":{ r:[2,5], conf:"hypothèse", n:"Ordre de grandeur de la surtaxe d'IS existante (environ 5 Md€ en 2027). Une nouvelle taxe n'a pas de chiffrage officiel." },
+  "q6_2.c":{ conf:"hypothèse" }, "q6_2.d":{ conf:"hypothèse" },
+  "q6_2.e":{ r:[1,3], conf:"estimé", n:"Fraude détectée en 2025 : plus de 20 Md€ dont 3 Md€ de fraude sociale ; le gouvernement vise 10 Md€ de détection sociale en 2026. Les sommes recouvrées sont inférieures (11,4 Md€ encaissés par la DGFiP)." },
+  "q6_3.a":{ conf:"hypothèse" },
+  "q6_3.d":{ once:40, conf:"hypothèse", n:"Les participations cotées valent 68 Md€ ; le reste du portefeuille (209 Md€ au total) est moins liquide. Les dividendes perdus ne sont pas déduits." },
+  "q7_1.b":{ d:[1,1.5], conf:"estimé", n:"15 000 places de prison : 5,7 Md€ d'investissement (Cour des comptes, 2025) et environ 38 300 € par place et par an de fonctionnement." },
+  "q7_2.b":{ conf:"hypothèse" }, "q7_2.c":{ conf:"hypothèse" }, "q7_2.d":{ conf:"hypothèse" },
+  "q8_2.b":{ conf:"hypothèse" }, "q8_2.c":{ conf:"hypothèse" },
+  "q9_1.b":{ d:[1,3], conf:"hypothèse", n:"Hypothèse : plan de construction publique ; aucun chiffrage officiel retenu ici." },
+  "q9_1.c":{ d:[1,2], conf:"hypothèse", n:"Hypothèse : hausse de quelques points des aides au logement." },
+  "q9_1.e":{ d:[1.8,3.6], conf:"hypothèse", n:"MaPrimeRénov' coûte 3,6 Md€ en 2026 ; l'hypothèse est une hausse de 50 à 100 %." },
+  "q10_1.a":{ n:"Pas d'estimation fiable du coût net. Repère : l'aide médicale d'État coûte environ 1,2 Md€ par an." },
+  "q10_1.d":{ n:"Pas d'estimation fiable des économies. Repère : l'aide médicale d'État coûte environ 1,2 Md€ par an (2026)." },
+  "q11_1.a":{ n:"La contribution française au budget européen est de 28,8 Md€ en 2026, dont environ 16,5 Md€ reviennent sous forme de dépenses : une intégration renforcée l'augmenterait, non chiffré." },
+  "q11_1.d":{ n:"Contribution de 28,8 Md€ en 2026, soit environ 12 Md€ nets des retours (calcul) ; les économies possibles ne sont pas chiffrées." },
+  "q11_2.b":{ conf:"estimé" }, "q11_2.c":{ conf:"estimé" },
+  "q12_1.b":{ conf:"hypothèse" }, "q12_1.c":{ conf:"hypothèse" }, "q12_1.d":{ conf:"hypothèse" },
+  "q13_1.a":{ d:[18,52], conf:"estimé", n:"I4CE : sans limiter les dépenses, +52 Md€ de dépenses publiques climat en 2030 ; avec des mesures ciblées, +18 Md€." },
+  "q13_1.b":{ d:[10,18], conf:"hypothèse", n:"Hypothèse : version ciblée (régulation, aides concentrées sur les ménages modestes), à l'intérieur de la fourchette I4CE." },
+  "q15_1.a":{ n:"Le coût de rachat des entreprises nationalisées n'est pas chiffré." }
+};
+(function applyChiffrage(){
+  Object.keys(CHIFFRAGE).forEach(function(key){
+    var parts = key.split("."), q = null, op = null, i;
+    for (i = 0; i < QS.length; i++) if (QS[i].id === parts[0]) q = QS[i];
+    if (!q) return;
+    for (i = 0; i < q.opts.length; i++) if (q.opts[i].id === parts[1]) op = q.opts[i];
+    if (!op) return;
+    var c = CHIFFRAGE[key];
+    Object.keys(c).forEach(function(k){ op[k] = c[k]; });
+    if (c.r || c.d || c.once) op.nc = false;
+  });
+  QS.forEach(function(q){ q.opts.forEach(function(op){ if ((op.r || op.d || op.once) && !op.conf) op.conf = "estimé"; }); });
+})();
+
+/* ===================== ESTIMATION POUR CHAQUE RÉPONSE =====================
+   Chaque option a une estimation (rapporte, coûte, ponctuel) ou un effet budgétaire direct nul (zero).
+   Les montants marqués « hypothèse » sont des ordres de grandeur sans source solide, avec leur raisonnement dans la note. */
+var CHIFFRAGE2 = {
+  "q1_1.a":{ d:[0.5,3], conf:"hypothèse", n:"Hypothèse : coût pour l'État via la fonction publique et les allègements de cotisations ; le coût principal pèse sur les entreprises, pas sur le budget." },
+  "q1_1.d":{ d:[1,3], conf:"hypothèse", n:"Hypothèse : environ +10 à +30 % de la prime d'activité (environ 10 Md€, ordre de grandeur non vérifié) ou chèques équivalents." },
+  "q1_2.a":{ d:[0,25], conf:"hypothèse", n:"Hypothèse très large : 0 si la mesure ne touche que le privé ; jusqu'à environ 25 Md€ si la fonction publique compense par des embauches (environ 10 % d'une masse salariale d'environ 300 Md€, non vérifié)." },
+  "q1_2.b":{ zero:true },
+  "q1_2.c":{ zero:true, n:"Pas d'effet budgétaire direct : la négociation se fait entre employeurs et salariés." },
+  "q1_3.b":{ zero:true },
+  "q1_3.c":{ d:[2,5], conf:"hypothèse", n:"Hypothèse : +5 à +15 % des allocations chômage (environ 37 Md€ par an, ordre de grandeur non vérifié)." },
+  "q1_3.d":{ d:[4,18], conf:"hypothèse", n:"Hypothèse : environ 18 000 € de coût net public par emploi (ordre de grandeur de l'expérimentation « Territoires zéro chômeur »), pour 200 000 à 1 million d'emplois." },
+  "q2_1.b":{ d:[3,7], conf:"estimé", sq:false, n:"Si la réforme de 2023 est suspendue (62 ans et 9 mois, à vérifier), revenir à 62 ans retire environ 9 mois : 3 à 7 Md€ (calcul à partir des 10 Md€ du COR pour deux ans et des 17,7 Md€ du gouvernement en 2030)." },
+  "q2_2.d":{ zero:true, n:"Pas de coût nouveau : l'équilibre repose sur l'âge ou la durée de départ (question précédente)." },
+  "q2_3.b":{ zero:true },
+  "q3_1.a":{ zero:true },
+  "q3_3.b":{ zero:true, n:"Pas de dépense publique : le coût (6 à 9 Md€ de primes selon le rapport Libault) serait porté par les ménages, sous forme de prélèvement obligatoire." },
+  "q3_3.c":{ d:[2,5], conf:"hypothèse", n:"Hypothèse : financement public partiel du besoin (6 à 9 Md€), le reste restant à la charge des ménages selon leurs revenus et leur patrimoine ; reste à charge en EHPAD d'environ 1 800 € par mois." },
+  "q3_3.d":{ d:[6,9], r:[2.5,6], conf:"estimé", n:"Besoin public de 6,2 Md€ en 2024 et 9,2 Md€ en 2030 (rapport Libault). Recette : 0,15 à 0,35 point de CSG (17 Md€ par point, estimation), soit 2,5 à 6 Md€ ; le reste est à financer." },
+  "q3_4.a":{ zero:true },
+  "q3_4.b":{ zero:true, n:"Pas d'effet budgétaire direct retenu." },
+  "q3_4.c":{ zero:true, n:"Pas d'effet budgétaire direct retenu : cette mesure ne doit pas être présentée comme une économie." },
+  "q3_4.d":{ zero:true, n:"Pas d'effet budgétaire direct retenu." },
+  "q4_1.a":{ d:[0.3,1], conf:"hypothèse", n:"Hypothèse : primes pour environ 10 % des enseignants." },
+  "q4_2.b":{ d:[0.3,3], conf:"hypothèse", n:"Hypothèse : coût selon le montant du chèque et le nombre de familles qui en profitent (un élève du privé sous contrat coûte à l'État environ 5 000 €, un élève du public environ 10 500 €)." },
+  "q4_2.d":{ zero:true },
+  "q4_3.a":{ d:[0.1,0.5], conf:"hypothèse", n:"Hypothèse : évaluations régulières et formation des enseignants." },
+  "q4_3.b":{ d:[0,0.5], conf:"hypothèse", n:"Hypothèse : uniformes et surveillance, selon qui paie." },
+  "q4_3.c":{ zero:true },
+  "q4_3.d":{ zero:true },
+  "q5_1.b":{ zero:true },
+  "q5_2.b":{ zero:true },
+  "q5_3.b":{ zero:true },
+  "q5_4.e":{ r:[0.5,2], conf:"hypothèse", n:"Hypothèse : 1 à 3 % du périmètre étroit des aides (82 Md€) non versé faute de respecter les conditions." },
+  "q6_1.a":{ zero:true, n:"Choix d'orientation : l'effet budgétaire se lit dans les mesures des questions suivantes." },
+  "q6_1.b":{ zero:true, n:"Choix d'orientation : l'effet budgétaire se lit dans les mesures des questions suivantes." },
+  "q6_1.c":{ zero:true, n:"Choix d'orientation : l'effet budgétaire se lit dans les mesures des questions suivantes." },
+  "q6_1.d":{ zero:true, n:"Choix d'orientation : l'effet budgétaire se lit dans les mesures des questions suivantes." },
+  "q6_2.f":{ r:[0.1,1], conf:"hypothèse", n:"Hypothèse : économies sur les agences et niches qui ne passeraient pas l'évaluation." },
+  "q6_2.g":{ r:[0,0.5], conf:"hypothèse", n:"Effet comportemental à tester : les études sur l'effet de l'affichage des coûts sont rares." },
+  "q6_3.b":{ zero:true },
+  "q6_3.c":{ onced:[10,50], conf:"hypothèse", n:"Hypothèse : plusieurs dizaines de Md€ de rachat selon les secteurs (autoroutes, énergie, transports), sans compter les dividendes ou recettes gagnés ou perdus." },
+  "q7_1.a":{ d:[1,3], conf:"hypothèse", n:"Hypothèse : +4 à +12 % du budget de la police et de la gendarmerie (environ 25 Md€)." },
+  "q7_1.c":{ d:[1,3], conf:"hypothèse", n:"Hypothèse : programmes de prévention et d'éducation dans les quartiers." },
+  "q7_1.d":{ d:[0.5,1.5], conf:"hypothèse", n:"Hypothèse : +4 à +12 % du budget de la justice (environ 12 Md€)." },
+  "q7_1.e":{ d:[0.02,0.1], conf:"hypothèse", n:"Hypothèse : renforcement des services d'inspection." },
+  "q7_1.f":{ d:[0,0.3], conf:"hypothèse", n:"Hypothèse : coût d'encadrement et de formation, en partie compensé par le travail rémunéré." },
+  "q7_2.a":{ zero:true },
+  "q8_1.a":{ d:[0.5,2], conf:"hypothèse", n:"Hypothèse : moyens supplémentaires pour la police, la justice et l'administration pénitentiaire." },
+  "q8_1.b":{ zero:true },
+  "q8_1.c":{ r:[0.1,0.5], conf:"hypothèse", n:"Hypothèse : moins de procédures et d'amendes pour usage." },
+  "q8_1.d":{ zero:true, n:"Voir la question suivante pour le chiffrage selon les drogues." },
+  "q8_2.a":{ r:[0.4,1], conf:"hypothèse", n:"Hypothèse : le marché du cannabis pèse environ 2,7 Md€ ; l'État ne conserverait que 15 à 40 % après coûts et baisse des prix." },
+  "q9_1.a":{ zero:true, n:"Pas d'effet budgétaire direct ; effet sur la croissance non estimé." },
+  "q9_1.d":{ zero:true, n:"Pas d'effet budgétaire direct ; effet sur l'offre de logements débattu." },
+  "q9_1.f":{ zero:true },
+  "q10_1.a":{ d:[1,4], conf:"hypothèse", n:"Hypothèse : coûts d'accueil (hébergement, asile, santé) avant effets sur l'emploi et les recettes ; l'aide médicale d'État coûte environ 1,2 Md€." },
+  "q10_1.b":{ zero:true },
+  "q10_1.c":{ r:[0.5,1.5], conf:"hypothèse", n:"Hypothèse : réduction des coûts d'asile et d'accueil ; effets sur l'économie débattus." },
+  "q10_1.d":{ r:[1,4], conf:"hypothèse", n:"Hypothèse : aide médicale d'État (environ 1,2 Md€), asile et prestations ; effets sur l'économie et la main-d'œuvre débattus." },
+  "q10_2.a":{ d:[0.3,1.5], conf:"hypothèse", n:"Hypothèse : coûts d'accès aux droits, avant les cotisations et impôts supplémentaires, dont le solde net est débattu." },
+  "q10_2.b":{ zero:true, n:"Effet net proche de zéro : accès aux droits compensé en partie par des cotisations (hypothèse)." },
+  "q10_2.c":{ zero:true },
+  "q10_2.d":{ zero:true },
+  "q11_1.a":{ d:[1,4], conf:"hypothèse", n:"Contribution française de 28,8 Md€ en 2026 dont 16,5 Md€ reviennent ; une intégration renforcée pourrait la faire monter de 5 à 15 % (hypothèse)." },
+  "q11_1.b":{ zero:true },
+  "q11_1.c":{ zero:true, n:"Pas d'effet budgétaire direct retenu." },
+  "q11_1.d":{ r:[1,6], conf:"hypothèse", n:"Contribution nette d'environ 12 Md€ (28,8 − 16,5) : une renégociation pourrait en économiser une partie, au risque de perdre des retours (agriculture, cohésion)." },
+  "q11_2.a":{ zero:true },
+  "q11_2.d":{ d:[0,5], conf:"hypothèse", n:"Hypothèse : coûts de capacités nationales à reconstituer, très variables." },
+  "q11_3.a":{ r:[0.5,1.4], conf:"estimé", n:"Environ +0,1 % de croissance par an (estimation citée), soit 3 Md€ de PIB, dont environ 45 % reviennent en prélèvements (calcul)." },
+  "q11_3.b":{ zero:true },
+  "q11_3.c":{ d:[0,2], conf:"hypothèse", n:"Hypothèse : mesures d'accompagnement ; les droits de douane reviennent au budget de l'Union européenne." },
+  "q11_3.d":{ zero:true },
+  "q12_1.a":{ zero:true },
+  "q12_2.a":{ zero:true },
+  "q12_2.b":{ zero:true, n:"Pas d'effet direct : le coût du nucléaire est porté par EDF et les consommateurs, avec des garanties de l'État." },
+  "q12_2.c":{ d:[1,4], conf:"hypothèse", n:"Hypothèse : soutiens publics aux renouvelables." },
+  "q12_3.a":{ d:[0.5,2], conf:"hypothèse", n:"Hypothèse : +5 à +20 % d'aides agricoles (la PAC représente environ 9 Md€ pour la France, ordre de grandeur non vérifié)." },
+  "q12_3.b":{ d:[0.5,2], conf:"hypothèse", n:"Hypothèse : aides à la transition des pratiques." },
+  "q12_3.c":{ zero:true },
+  "q12_3.d":{ zero:true },
+  "q13_1.c":{ d:[2,6], conf:"hypothèse", n:"Hypothèse : plan d'adaptation limité (bâtiments, eau, villes)." },
+  "q13_1.d":{ zero:true, n:"Effet incertain : la baisse de la consommation réduit aussi certaines recettes fiscales (non estimé)." },
+  "q14_1.a":{ zero:true },
+  "q14_1.b":{ zero:true },
+  "q14_1.c":{ d:[0,0.3], conf:"hypothèse", n:"Hypothèse : coût de référendums supplémentaires (environ 0,2 Md€ par scrutin)." },
+  "q14_1.d":{ zero:true },
+  "q14_2.a":{ zero:true },
+  "q14_2.c":{ r:[0.05,0.1], conf:"hypothèse", n:"Hypothèse : réduction limitée aux ministres et aux cabinets." },
+  "q14_3.a":{ zero:true, n:"Transfert de compétences : pas d'effet net sur le budget public s'il est accompagné des moyens." },
+  "q14_3.b":{ zero:true },
+  "q14_3.c":{ zero:true },
+  "q15_1.a":{ d:[5,30], conf:"hypothèse", n:"Hypothèse très large : 1 à 5 % de 600 Md€ de dépenses de fonctionnement et d'intervention, plus les coûts de rachat éventuels (non vérifié)." },
+  "q15_1.b":{ zero:true },
+  "q15_1.c":{ r:[3,15], conf:"hypothèse", n:"Hypothèse très large : 0,5 à 2,5 % de 600 Md€ de dépenses (non vérifié)." },
+  "q15_1.d":{ r:[5,20], conf:"hypothèse", n:"Hypothèse très large : 1 à 3 % de 600 Md€ de dépenses (non vérifié)." },
+  "q15_2.a":{ d:[5,30], conf:"hypothèse", n:"Hypothèse très large : hausse des prestations et des salaires publics." },
+  "q15_2.b":{ d:[1,5], conf:"hypothèse", n:"Hypothèse : investissements en éducation et mobilité." },
+  "q15_2.c":{ r:[5,20], conf:"hypothèse", n:"Hypothèse très large : baisse des prestations." },
+  "q15_2.d":{ d:[2,8], conf:"hypothèse", n:"Hypothèse : revalorisation des minima sociaux d'environ 10 %." },
+  "q15_3.a":{ zero:true },
+  "q15_3.b":{ r:[0.5,2], conf:"hypothèse", n:"Hypothèse : 5 à 15 % du RSA (environ 12 Md€, ordre de grandeur non vérifié)." },
+  "q15_3.c":{ r:[1,3], conf:"hypothèse", n:"Hypothèse : aides sociales versées à des non-nationaux ou à des résidents récents." },
+  "q15_3.d":{ d:[2,5], conf:"hypothèse", n:"Hypothèse : le non-recours au RSA est d'environ 34 % (ordre de grandeur non vérifié), ce qui ajouterait 2 à 5 Md€ de dépenses." },
+  "q16_1.a":{ zero:true },
+  "q16_1.b":{ zero:true },
+  "q16_1.c":{ zero:true },
+  "q16_2.a":{ d:[0.1,0.5], conf:"hypothèse", n:"Hypothèse : cours de langue et parcours civique." },
+  "q16_2.b":{ d:[0.5,2], conf:"hypothèse", n:"Hypothèse : accompagnement vers l'emploi et le logement." },
+  "q16_2.c":{ zero:true }
+};
+(function applyChiffrage2(){
+  Object.keys(CHIFFRAGE2).forEach(function(key){
+    var parts = key.split("."), q = null, op = null, i;
+    for (i = 0; i < QS.length; i++) if (QS[i].id === parts[0]) q = QS[i];
+    if (!q) { throw new Error("question introuvable " + key); }
+    for (i = 0; i < q.opts.length; i++) if (q.opts[i].id === parts[1]) op = q.opts[i];
+    if (!op) { throw new Error("option introuvable " + key); }
+    var c = CHIFFRAGE2[key];
+    Object.keys(c).forEach(function(k){ op[k] = c[k]; });
+  });
+  QS.forEach(function(q){ q.opts.forEach(function(op){
+    op.nc = false;
+    if ((op.r || op.d || op.once || op.onced) && !op.conf) op.conf = "estimé";
+    if (op.sq && !(op.r || op.d || op.once || op.onced)) op.zero = true;
+  }); });
+})();
+
+var CONSTRAINTS = {
+  A:{ label:"Revenir à 3 % du PIB", target:60, hint:"Environ 60 Md€ d'effort par an." },
+  B:{ label:"Stabiliser le déficit, puis le réduire d'un point sur le mandat", target:30, hint:"Environ 30 Md€ d'effort par an (un point de PIB)." },
+  C:{ label:"Accepter plus de déficit pour investir", target:0, hint:"Le solde doit rester positif ou nul." },
+  D:{ label:"Pas de contrainte : mes priorités d'abord", target:null, hint:"Aucune cible affichée." }
+};
+
+var FICHES = {
+  tva:{ title:"+1 point de TVA", pts:[
+    ["Ce que les données établissent","Un point de TVA sur tous les taux fait perdre 0,7 % de pouvoir d'achat au cinquième des ménages le plus modeste, contre 0,4 % au plus aisé (DG Trésor, via FIPECO). Un scénario de l'Insee à +3 points du taux normal donne 11,7 Md€ de recettes et 1,1 point d'inflation la même année."],
+    ["Le meilleur argument des opposants","La TVA pèse 13,1 % du revenu des 10 % les plus modestes contre 7,4 % des plus aisés (Insee) : elle va à l'encontre d'un objectif de pouvoir d'achat."],
+    ["Ce qui est contesté","Rapportée à la consommation, la TVA est à peu près proportionnelle (12,6 % contre 13,4 %, Conseil des prélèvements obligatoires), et les effets différés compensent 55 % du choc au bout de trois ans (Insee)."],
+    ["Le risque principal","Le scénario Insee donne environ 4 Md€ par point du taux normal, nettement moins que les 7 à 11 Md€ par point avancés ailleurs (Terra Nova). L'écart n'est pas réconcilié : le gain net est peut-être surestimé."],
+    ["Ce qui devrait changer pour revoir la mesure","Un gain net inférieur à 4-5 Md€ après indexation des dépenses. Variante : un point ciblé, avec compensation pour les ménages modestes."]
+  ]},
+  retraite:{ title:"Reculer l'âge ou allonger la durée de cotisation", pts:[
+    ["Ce que les données établissent","Le taux d'emploi des 60-64 ans a gagné 8,2 points en trois ans, que le ministère du Travail relie à la réforme de 2023, mais il reste à 44,4 % contre 55 % dans l'Union."],
+    ["Le meilleur argument des opposants","Un senior au chômage retrouve rarement un emploi : 15,5 % des 55-64 ans en région Centre-Val de Loire en retrouvent un en un an, contre 31,8 % des 25-54 ans. Reculer l'âge peut déplacer des coûts vers le chômage, le RSA et l'invalidité."],
+    ["Ce qui est contesté","Le gain net est une extrapolation. Pour un parcours commençant vers 22 ans, 45 ans de cotisation reviennent à partir vers 67 ans. Le surcoût de transition d'une part de capitalisation n'est pas vérifié."],
+    ["Le risque principal","Une règle fondée sur la durée avantage ceux qui ont commencé tôt et pénalise les longues études, les carrières hachées et les femmes. Associée à des pensions sous-indexées, elle fait porter un double effort aux retraités."],
+    ["Ce qui devrait changer pour revoir la mesure","Si l'emploi des 60-64 ans ne suivait pas l'allongement, le gain deviendrait du chômage. Variante : une durée de cotisation avec un correctif pour les carrières hachées."]
+  ]},
+  drogues:{ title:"Légaliser le cannabis ou la cocaïne", pts:[
+    ["Ce que les données établissent","Au Canada, la part légale du cannabis consommé est passée de 22 % fin 2018 à plus de 70 % début 2023, sans hausse d'usage chez les 15-17 ans. Je n'ai trouvé aucun pays qui ait légalisé la cocaïne, et les conventions de l'ONU en limitent l'usage aux fins médicales."],
+    ["Le meilleur argument des opposants","L'usage de cocaïne progresse déjà en France : l'expérimentation est passée de 1,8 % en 2000 à 9,4 % en 2023, avec une pureté de 73 %. La rendre légale et accessible pourrait amplifier cette hausse, sans précédent pour la mesurer."],
+    ["Ce qui est contesté","Le marché noir canadien n'a pas disparu : une taxe trop élevée l'entretient. Le Canada a perçu 2,5 milliards de dollars canadiens de recettes de cannabis en 2025, mais le net pour un État vendeur de cocaïne est inconnu."],
+    ["Le risque principal","L'État vendeur d'un produit très addictif, et la rupture avec les conventions internationales. Le cannabis est la partie la plus défendable, la cocaïne la plus fragile."],
+    ["Ce qui devrait changer pour revoir la mesure","Une expérience montrant que la cocaïne légale ne fait pas monter l'usage problématique. Variante : le cannabis d'abord, la cocaïne en expérimentation encadrée."]
+  ]}
+};
+
+/* règles de cohérence : signalées de la même façon quel que soit le bord */
+var TENSIONS = [
+  { when:function(c){ return c.has("baisse_charges") && c.has("nouveau_prelevement"); }, msg:"Tu baisses les charges sur les salaires et crées en même temps un prélèvement pour la dépendance : le net des salariés pourrait progresser moins que prévu." },
+  { when:function(c){ return c.has("quota_national") && c.has("mairies"); }, msg:"Tu donnes plus de pouvoir aux mairies et tu fixes des règles nationales (quotas, participations) : il faut dire ce qui reste décidé au niveau national." },
+  { when:function(c){ return c.has("agri_soutien") && c.has("libre_echange"); }, msg:"Tu soutiens les agriculteurs et les accords de libre-échange : la France s'est opposée au Mercosur notamment pour des raisons agricoles." },
+  { when:function(c){ return c.has("pouvoir_achat") && (c.has("tva_plus") || c.has("sous_indexation")); }, msg:"Tu défends le pouvoir d'achat et tu relèves la TVA ou sous-indexes les pensions : ces mesures le réduisent pour certains ménages." },
+  { when:function(c){ return c.has("baisse_tva"); }, msg:"Baisser la TVA réduit les recettes de l'État : de l'ordre de 10 à 17 Md€ pour l'énergie (hors produits de première nécessité), à financer par des impôts, des économies ou de la dette." },
+  { when:function(c){ return c.has("ret_60"); }, msg:"Une retraite à 60 ans coûte de l'ordre de 30 à 43 Md€ par an selon l'Institut Montaigne (jusqu'à 85 Md€ selon d'autres sources) : il faut préciser le financement (cotisations, impôts ou dette)." },
+  { when:function(c){ return c.has("heritage_haut") && c.has("patrimoine_allege"); }, msg:"Tu taxes davantage l'héritage et allèges l'impôt sur le capital : où places-tu la limite pour les entreprises familiales ?" },
+  { when:function(c){ return c.has("taxer_capital"); }, msg:"Taxer fortement le capital ou les hauts patrimoines : les effets sur l'investissement et le départ de contribuables sont débattus, et les rendements dépendent de la conception de l'impôt." },
+  { when:function(c){ return c.has("legalise_coca"); }, msg:"Légaliser la cocaïne : aucun pays ne l'a fait, les conventions de l'ONU en limitent l'usage aux fins médicales, et l'effet sur la consommation est inconnu." },
+  { when:function(c){ return c.has("legalise") && !c.has("legalise_coca"); }, msg:"Légaliser le cannabis : le marché noir survit si la taxe est trop forte (exemple du Canada), et la mesure suppose d'examiner les conventions internationales." },
+  { when:function(c){ return c.has("recherche_plus") && c.has("cuts_niches"); }, msg:"Tu soutiens la recherche et réduis les niches fiscales : le crédit d'impôt recherche (environ 8 Md€) en fait partie." },
+  { when:function(c){ return c.has("immig_reduire"); }, msg:"Réduire fortement l'immigration : certains métiers manquent de main-d'œuvre et les effets économiques sont débattus ; la mesure doit aussi respecter le droit européen et la Constitution." },
+  { when:function(c){ return c.has("immig_ouvrir"); }, msg:"Accueillir davantage : il faut prévoir les capacités d'accueil (logement, école, services) et leur financement." },
+  { when:function(c){ return c.has("sortie_ue"); }, msg:"Sortir de règles européennes ou les assouplir : cela peut affecter le financement de la dette, les accords commerciaux et la défense collective." },
+  { when:function(c){ return c.has("collectivites") && c.has("doublons"); }, msg:"Freiner les dépenses des collectivités et rationaliser les opérateurs et compétences se recoupent en partie : ne les compte pas deux fois." },
+  { when:function(c){ return c.has("participation_ecole"); }, msg:"Faire payer les familles aisées pour l'école publique se heurte au principe de gratuité de l'enseignement public (préambule de 1946) : à vérifier juridiquement ; une contribution passant par l'impôt serait plus robuste. Risque : des familles quittent le public pour le privé, ce qui réduit la mixité." },
+  { when:function(c){ return c.has("contrib_sante"); }, msg:"Faire contribuer davantage les ménages aisés aux soins : le principe de solidarité de l'Assurance maladie et son acceptabilité sont à examiner ; une franchise suit l'usage des soins, une contribution proportionnelle au niveau de vie est plus proche d'un impôt." },
+  { when:function(c){ return c.has("capitalisation") && c.has("ret_tard"); }, msg:"Reculer le départ et créer une part de capitalisation : les gains du premier sont lents, le coût du second arrive tout de suite." }
+];
+
+/* ===================== ÉTAT ===================== */
+var STORE = "programme_v2";
+var state = { screen:"intro", constraint:"B", path:"quick", answers:{}, notes:{}, qi:0 };
+var caps = { sample:null, downloads:null };
+var standalone = (typeof claude === "undefined");
+function canDownload(){ return !!caps.downloads || standalone; }
+function saveFile(filename, data, mime){
+  if (caps.downloads) return caps.downloads.save({ filename:filename, data:data });
+  return new Promise(function(resolve, reject){
+    try {
+      var blob = (data instanceof Blob) ? data : new Blob([data], { type:mime || "text/plain" });
+      var url = URL.createObjectURL(blob), a = document.createElement("a");
+      a.href = url; a.download = filename; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 4000); resolve({ status:"saved" });
+    } catch (e) { reject(e); }
+  });
+}
+var ai = {};
+var lastFocus = null;
+
+function loadState(){
+  try {
+    var raw = window.localStorage.getItem(STORE);
+    if (raw) { var s = JSON.parse(raw); if (s && s.answers) { state.constraint = s.constraint || "B"; state.path = s.path || "quick"; state.answers = s.answers; state.notes = s.notes || {}; state.saved = true; } }
+  } catch (e) {}
+}
+function saveState(){
+  try { window.localStorage.setItem(STORE, JSON.stringify({ constraint:state.constraint, path:state.path, answers:state.answers, notes:state.notes })); } catch (e) {}
+}
+
+/* ===================== LOGIQUE ===================== */
+function visibleQs(){
+  return QS.filter(function(q){ return (state.path === "full" || q.quick) && (!q.showIf || q.showIf(state.answers)); });
+}
+function selectedOpts(){
+  var out = [];
+  visibleQs().forEach(function(q){
+    (state.answers[q.id] || []).forEach(function(id){
+      var op = q.opts.filter(function(x){ return x.id === id; })[0];
+      if (op) out.push({ q:q, o:op });
+    });
+  });
+  return out;
+}
+function budget(){
+  var b = { rlo:0, rhi:0, dlo:0, dhi:0, once:0, odlo:0, odhi:0, hyp:0, tot:0 };
+  selectedOpts().forEach(function(s){
+    var op = s.o;
+    if (op.r) { b.rlo += op.r[0]; b.rhi += op.r[1]; }
+    if (op.d) { b.dlo += op.d[0]; b.dhi += op.d[1]; }
+    if (op.once) b.once += op.once;
+    if (op.onced) { b.odlo += op.onced[0]; b.odhi += op.onced[1]; }
+    if (op.r || op.d || op.once || op.onced) { b.tot += 1; if (op.conf === "hypothèse") b.hyp += 1; }
+  });
+  b.slo = round1(b.rlo - b.dhi);
+  b.shi = round1(b.rhi - b.dlo);
+  b.rlo = round1(b.rlo); b.rhi = round1(b.rhi); b.dlo = round1(b.dlo); b.dhi = round1(b.dhi);
+  return b;
+}
+function round1(x){ return Math.round(x * 10) / 10; }
+function fmt(n){
+  var s = (Math.round(n * 10) / 10).toString().replace(".", ",");
+  return s;
+}
+function sgn(n){ return (n > 0 ? "+" : n < 0 ? "−" : "") + fmt(Math.abs(n)); }
+function rng(a){ return a[0] === a[1] ? fmt(a[0]) : fmt(a[0]) + " à " + fmt(a[1]); }
+function soldeText(b){
+  if (b.slo === b.shi) return sgn(b.slo);
+  return sgn(b.slo) + " à " + sgn(b.shi);
+}
+function tagSet(){
+  var t = {};
+  selectedOpts().forEach(function(s){ (s.o.tags || []).forEach(function(x){ t[x] = true; }); });
+  return t;
+}
+function activeTensions(){
+  var tags = tagSet();
+  var ctx = { has:function(x){ return !!tags[x]; } };
+  var out = TENSIONS.filter(function(t){ return t.when(ctx); }).map(function(t){ return t.msg; });
+  var b = budget();
+  var c = CONSTRAINTS[state.constraint];
+  if (selectedOpts().length && b.slo < 0) out.unshift("Dans le scénario prudent, ton programme creuse le déficit de " + fmt(Math.abs(b.slo)) + " Md€ par an.");
+  if (c && c.target && selectedOpts().length) {
+    var pl = Math.max(0, Math.round(b.slo / c.target * 100)), ph = Math.max(0, Math.round(b.shi / c.target * 100));
+    out.unshift("Ta contrainte (" + c.label.toLowerCase() + ") demande environ " + c.target + " Md€ par an : ton programme en couvre " + pl + " % à " + ph + " %.");
+  }
+  if (c && state.constraint === "C" && selectedOpts().length && b.slo < 0) out.push("Tu acceptes plus de déficit pour investir : précise ce que l'investissement rapportera à terme.");
+  return out;
+}
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function hash(s){ var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); }
+function orderedOpts(q){
+  var n = q.opts.length, k = hash(q.id) % n, out = [];
+  for (var i = 0; i < n; i++) out.push(q.opts[(i + k) % n]);
+  return out;
+}
+function themeQs(th){ return visibleQs().filter(function(q){ return q.th === th; }); }
+function themesWithQs(){
+  var seen = {}, out = [];
+  visibleQs().forEach(function(q){ if (!seen[q.th]) { seen[q.th] = true; out.push(q.th); } });
+  return out;
+}
+
+/* ===================== RENDU ===================== */
+function chipsFor(op){
+  var c = [];
+  var cf = op.conf ? ' <span class="conf">(' + op.conf + ')</span>' : "";
+  if (op.r) c.push('<span class="chip pos">rapporte ' + rng(op.r) + ' Md€ par an' + cf + '</span>');
+  if (op.d) c.push('<span class="chip neg">coûte ' + rng(op.d) + ' Md€ par an' + (op.r ? "" : cf) + '</span>');
+  if (op.once) c.push('<span class="chip once">ponctuel : rapporte ' + fmt(op.once) + ' Md€ pour la dette' + (op.r || op.d ? "" : cf) + '</span>');
+  if (op.onced) c.push('<span class="chip neg">ponctuel : coûte ' + rng(op.onced) + ' Md€' + (op.r || op.d || op.once ? "" : cf) + '</span>');
+  if (op.zero && !(op.r || op.d || op.once || op.onced)) c.push('<span class="chip nc">aucun effet budgétaire direct</span>');
+  return c.length ? '<span class="chips">' + c.join("") + '</span>' : "";
+}
+
+function balanceHTML(){
+  var b = budget();
+  var any = selectedOpts().length > 0;
+  var c = CONSTRAINTS[state.constraint];
+  var target = c ? c.target : null;
+  var lo = Math.min(-20, Math.floor((b.slo - 10) / 10) * 10);
+  var hi = Math.max(80, Math.ceil((b.shi + 10) / 10) * 10, target ? target + 10 : 0);
+  var p = function(v){ return (Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo) * 100; };
+  var ticks = "";
+  for (var v = lo; v <= hi; v += 20) ticks += '<span class="tick" style="left:' + p(v) + '%"><b>' + v + '</b></span>';
+  var rangeStart = p(Math.min(b.slo, b.shi)), rangeEnd = p(Math.max(b.slo, b.shi));
+  if (rangeEnd - rangeStart < 1.6) { rangeEnd = rangeStart + 1.6; }
+  var zero = p(0);
+  var negW = 0, posW = 0;
+  if (any) {
+    var a = Math.min(b.slo, b.shi), z = Math.max(b.slo, b.shi);
+    var negPart = Math.max(0, Math.min(0, z) - a), posPart = Math.max(0, z - Math.max(0, a));
+    var width = rangeEnd - rangeStart;
+    if (negPart + posPart === 0) { if (z < 0) negW = width; else posW = width; }
+    else { negW = width * negPart / (negPart + posPart); posW = width * posPart / (negPart + posPart); }
+  }
+  var cls = !any ? "" : (b.shi < 0 ? "neg" : (b.slo >= 0 ? "pos" : ""));
+  var sol = any ? soldeText(b) : "0";
+  var tgt = target ? '<span class="target" style="left:' + p(target) + '%"><em>cible ' + target + '</em></span>' : "";
+  var ruler = '<div class="ruler" aria-hidden="true"><span class="axis"></span>' + ticks +
+    '<span class="zero" style="left:' + zero + '%"><em>0</em></span>' + tgt +
+    (any ? '<span class="range" style="left:' + rangeStart + '%;width:' + (rangeEnd - rangeStart) + '%"><i class="n" style="width:' + (negW / (rangeEnd - rangeStart) * 100) + '%"></i><i class="p" style="width:' + (posW / (rangeEnd - rangeStart) * 100) + '%"></i></span>' : "") + '</div>';
+  var facts = '<dl class="facts">' +
+    '<div><dt>Rapporte (recettes et économies)</dt><dd>' + (any ? (b.rlo === b.rhi ? fmt(b.rlo) : fmt(b.rlo) + " à " + fmt(b.rhi)) : "0") + ' Md€</dd></div>' +
+    '<div><dt>Coûte (dépenses nouvelles)</dt><dd>' + (any ? (b.dlo === b.dhi ? fmt(b.dlo) : fmt(b.dlo) + " à " + fmt(b.dhi)) : "0") + ' Md€</dd></div>' +
+    (b.once ? '<div><dt>Ponctuel : cessions pour la dette</dt><dd>' + fmt(b.once) + ' Md€</dd></div>' : "") +
+    (b.odhi ? '<div><dt>Ponctuel : coût (rachats)</dt><dd>' + rng([round1(b.odlo), round1(b.odhi)]) + ' Md€</dd></div>' : "") +
+    '<div><dt>Chiffrages en hypothèse</dt><dd>' + b.hyp + ' sur ' + b.tot + '</dd></div></dl>';
+  var al = activeTensions();
+  var alerts = al.length ? '<ul class="alerts">' + al.slice(0, 4).map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("") + (al.length > 4 ? "<li>… et " + (al.length - 4) + " autres points dans le bilan.</li>" : "") + "</ul>" : "";
+  var tgtTxt = c && c.target != null ? '<p class="tgt">Contrainte : ' + esc(c.label) + '. ' + esc(c.hint) + '</p>' : '<p class="tgt">Contrainte : ' + esc(c.label) + '.</p>';
+  return '<aside class="balance" id="balance" aria-label="La balance">' +
+    '<button class="bal-toggle" data-act="toggle-gauge" aria-expanded="false"><span><span class="l">Solde annuel</span><br><span class="s ' + cls + '">' + sol + ' Md€</span></span><span class="l">Détails</span></button>' +
+    '<h2>La balance : solde annuel après tes choix</h2>' +
+    '<p class="solde ' + cls + '">' + sol + '<span>Md€ par an</span></p>' +
+    '<div class="full">' + ruler + facts + (any ? "" : tgtTxt) + alerts + '</div></aside>';
+}
+
+function optionHTML(q, op){
+  var selected = (state.answers[q.id] || []).indexOf(op.id) >= 0;
+  var type = q.type === "multi" ? "checkbox" : "radio";
+  var id = q.id + "__" + op.id;
+  return '<label class="opt' + (selected ? " on" : "") + '" for="' + id + '">' +
+    '<input class="sr" type="' + type + '" id="' + id + '" name="' + q.id + '" value="' + op.id + '"' + (selected ? " checked" : "") + '>' +
+    '<span class="box" aria-hidden="true"></span><span class="otxt"><span class="olabel">' + esc(op.t) + '</span>' + chipsFor(op) +
+    (op.n ? '<span class="onote">' + esc(op.n) + '</span>' : "") + '</span></label>';
+}
+
+function questionHTML(q){
+  var note = state.notes[q.id] || "";
+  return '<section class="q" id="sec_' + q.id + '"><h3>' + esc(q.title) + '</h3>' +
+    '<p class="ctx">' + esc(q.ctx) + (q.src ? '<small>' + esc(q.src) + '</small>' : "") + '</p>' +
+    '<p class="kind">' + (q.type === "multi" ? "Plusieurs choix possibles" : "Un seul choix") + '</p>' +
+    '<div class="opts" role="group" aria-label="' + esc(q.title) + '">' + orderedOpts(q).map(function(op){ return optionHTML(q, op); }).join("") + '</div>' +
+    '<button class="pass" data-act="pass" data-q="' + q.id + '">Je passe cette question</button>' +
+    '<details class="note"' + (note ? " open" : "") + '><summary>Ma précision, ou une option qui manque</summary><textarea rows="2" data-note="' + q.id + '" placeholder="Écris ici ton idée avec tes propres mots.">' + esc(note) + '</textarea></details></section>';
+}
+
+function introHTML(){
+  var cons = Object.keys(CONSTRAINTS).map(function(k){
+    var c = CONSTRAINTS[k];
+    return '<label class="opt' + (state.constraint === k ? " on" : "") + '" for="c_' + k + '"><input class="sr" type="radio" id="c_' + k + '" name="constraint" value="' + k + '"' + (state.constraint === k ? " checked" : "") + '><span class="box" aria-hidden="true"></span><span class="otxt"><span class="olabel">' + esc(c.label) + '</span><span class="onote">' + esc(c.hint) + '</span></span></label>';
+  }).join("");
+  var paths = [["quick","Parcours rapide","Une douzaine de questions, environ 15 minutes."],["full","Parcours complet","Une quarantaine de questions sur 16 thèmes."]].map(function(x){
+    return '<label class="opt' + (state.path === x[0] ? " on" : "") + '" for="p_' + x[0] + '"><input class="sr" type="radio" id="p_' + x[0] + '" name="path" value="' + x[0] + '"' + (state.path === x[0] ? " checked" : "") + '><span class="box" aria-hidden="true"></span><span class="otxt"><span class="olabel">' + x[1] + '</span><span class="onote">' + x[2] + '</span></span></label>';
+  }).join("");
+  return '<div class="hero"><h1>Construis ton programme pour la France</h1>' +
+    '<p class="lead">Réponds à des questions sur les grands choix publics. Une balance te montre en direct ce que tes choix coûtent et rapportent. À la fin, tu obtiens ton programme et tu peux le soumettre à un test de résistance.</p>' +
+    '<p class="neutral">Les options couvrent toutes les sensibilités politiques. Si la tienne manque, écris-la dans « Ma précision » : elle apparaîtra dans ton programme. Chaque réponse affiche une estimation de son coût ou de son gain, avec son niveau de confiance (sourcé, estimé ou hypothèse). Ce sont des ordres de grandeur annuels (octobre 2026), à vérifier avant de les utiliser.</p></div>' +
+    '<fieldset class="fieldset"><legend>Ta contrainte budgétaire</legend><p class="hint">Le déficit public est d\'environ 5 % du PIB. Revenir à 3 % demande environ 60 Md€ d\'effort par an. Le projet de budget 2027, présenté le 1er octobre 2026, annonce déjà 54 Md€ d\'effort pour viser 5,0 % : les montants de cet outil sont à lire en plus de la politique actuelle, et il reste à décider s\'ils s\'ajoutent à cet effort ou le remplacent. Les camps divergent : réduire vite la dépense, augmenter les recettes, ou accepter plus de déficit pour investir.</p><div class="opts">' + cons + '</div></fieldset>' +
+    '<fieldset class="fieldset"><legend>Quel parcours ?</legend><div class="opts">' + paths + '</div></fieldset>' +
+    '<div class="btnrow"><button class="btn" data-act="start">Commencer</button>' + (state.saved ? '<button class="btn ghost" data-act="resume">Reprendre mes réponses</button>' : "") + '</div>';
+}
+
+function quizHTML(){
+  var themes = themesWithQs();
+  var th = themes[state.qi] != null ? themes[state.qi] : themes[0];
+  var idx = themes.indexOf(th);
+  var qs = themeQs(th);
+  var sel = themes.map(function(t, i){ return '<option value="' + i + '"' + (i === idx ? " selected" : "") + '>' + (i + 1) + '. ' + esc(THEMES[t]) + '</option>'; }).join("");
+  var pct = Math.round(idx / themes.length * 100);
+  return '<div class="prog"><div class="row"><span>Thème ' + (idx + 1) + ' sur ' + themes.length + '</span><label class="sr-label"><select data-act="goto" aria-label="Aller à un thème">' + sel + '</select></label></div><div class="bar"><i style="width:' + (pct + Math.round(100 / themes.length)) + '%"></i></div></div>' +
+    '<h2 class="theme-title">' + esc(THEMES[th]) + '</h2>' +
+    qs.map(questionHTML).join("") +
+    '<div class="nav"><button class="btn ghost" data-act="prev"' + (idx === 0 ? " disabled" : "") + '>Retour</button>' +
+    (idx < themes.length - 1 ? '<button class="btn" data-act="next">Thème suivant</button>' : '<button class="btn" data-act="bilan">Voir mon programme</button>') + '</div>';
+}
+
+function programmeByTheme(){
+  var by = {};
+  selectedOpts().forEach(function(s){ if (s.o.p) { (by[s.q.th] = by[s.q.th] || []).push(s.o.p); } });
+  return by;
+}
+function notesByTheme(){
+  var by = {};
+  visibleQs().forEach(function(q){ var n = (state.notes[q.id] || "").trim(); if (n) { (by[q.th] = by[q.th] || []).push(n); } });
+  return by;
+}
+
+function bilanHTML(){
+  var by = programmeByTheme(), nb = notesByTheme(), b = budget(), al = activeTensions();
+  var c = CONSTRAINTS[state.constraint];
+  var secs = "";
+  THEMES.forEach(function(t, i){
+    if (by[i] || nb[i]) {
+      secs += '<div class="sec"><h3>' + esc(t) + '</h3>' + (by[i] ? '<p>' + by[i].map(esc).join(" ") + '</p>' : "") + (nb[i] ? '<p><em>Ma précision : ' + nb[i].map(esc).join(" ; ") + '</em></p>' : "") + '</div>';
+    }
+  });
+  if (!secs) secs = '<p>Tu n\'as pas encore choisi de mesure. Retourne aux questions.</p>';
+  var fin = '<div class="box2"><h4>Financement</h4><ul>' +
+    '<li>Recettes et économies : ' + (b.rlo === b.rhi ? fmt(b.rlo) : fmt(b.rlo) + " à " + fmt(b.rhi)) + ' Md€ par an.</li>' +
+    '<li>Dépenses nouvelles : ' + (b.dlo === b.dhi ? fmt(b.dlo) : fmt(b.dlo) + " à " + fmt(b.dhi)) + ' Md€ par an.</li>' +
+    '<li>Solde : ' + soldeText(b) + ' Md€ par an (prudent : recettes basses et dépenses hautes ; haut : l\'inverse).</li>' +
+    (b.once ? '<li>Ponctuel : ' + fmt(b.once) + ' Md€ de cessions d\'actifs affectés à la dette.</li>' : "") +
+    (b.odhi ? '<li>Ponctuel : ' + rng([round1(b.odlo), round1(b.odhi)]) + ' Md€ de coût de rachat, hors solde annuel.</li>' : "") +
+    '<li>Contrainte choisie : ' + esc(c.label) + '.</li>' +
+    '<li>' + b.hyp + ' chiffrage(s) sur ' + b.tot + ' reposent sur une hypothèse sans source solide : lis-les comme des ordres de grandeur.</li></ul></div>';
+  var det = selectedOpts().filter(function(x){ return x.o.r || x.o.d || x.o.once || x.o.onced; }).map(function(x){
+    var e = [];
+    if (x.o.r) e.push("rapporte " + rng(x.o.r) + " Md€");
+    if (x.o.d) e.push("coûte " + rng(x.o.d) + " Md€");
+    if (x.o.once) e.push("ponctuel " + fmt(x.o.once) + " Md€");
+    if (x.o.onced) e.push("ponctuel, coûte " + rng(x.o.onced) + " Md€");
+    return "<li><strong>" + esc(x.o.t) + "</strong> : " + e.join(", ") + " (" + (x.o.conf || "estimé") + ")." + (x.o.n ? " " + esc(x.o.n) : "") + "</li>";
+  }).join("");
+  var detail = det ? '<div class="box2"><h4>Détail des chiffrages</h4><ul>' + det + '</ul></div>' : "";
+  var tens = al.length ? '<div class="box2"><h4>Points d\'attention</h4><ul>' + al.map(function(x){ return "<li>" + esc(x) + "</li>"; }).join("") + '<li>Les dépenses démarrent avant les économies, et les recrutements prennent des années.</li></ul></div>' : "";
+  return '<h2 class="theme-title">Ton programme</h2>' + secs + fin + detail + tens +
+    '<div class="btnrow no-print"><button class="btn" data-act="debat">Ouvrir le débat</button><button class="btn ghost" data-act="copy">Copier en Markdown</button>' +
+    (canDownload() ? '<button class="btn" data-act="pdf">Télécharger en PDF</button><button class="btn ghost" data-act="download">Télécharger (.md)</button>' : "") +
+    '<button class="btn ghost" data-act="edit">Modifier mes réponses</button></div>';
+}
+
+function debatHTML(){
+  var sel = selectedOpts().filter(function(s){ return !s.o.sq && s.o.p; });
+  var withFiche = sel.filter(function(s){ return s.o.fiche; });
+  var seenF = {}, fiches = "";
+  withFiche.forEach(function(s){
+    if (seenF[s.o.fiche]) return; seenF[s.o.fiche] = true;
+    var f = FICHES[s.o.fiche];
+    fiches += '<details class="fiche" open><summary>' + esc(f.title) + '</summary><dl>' + f.pts.map(function(pt){ return '<dt>' + esc(pt[0]) + '</dt><dd>' + esc(pt[1]) + '</dd>'; }).join("") + '</dl><p class="aiwarn">Sources consultées en octobre 2026 (Insee, DG Trésor, FIPECO, Statistique Canada, OFDT, ministère du Travail). À vérifier avant tout usage public.</p></details>';
+  });
+  var others = sel.filter(function(s){ return !s.o.fiche; });
+  var list = others.map(function(s){
+    var key = s.q.id + "__" + s.o.id, st = ai[key];
+    return '<details class="fiche"><summary>' + esc(s.o.t) + '</summary>' +
+      (caps.sample ? '<div class="btnrow no-print"><button class="btn ghost" data-act="ai" data-k="' + key + '">' + (st && st.text ? "Relancer l'analyse" : "Analyse contradictoire avec Claude") + '</button></div>' +
+        '<div class="aibox" id="ai_' + key + '">' + (st && st.text ? esc(st.text) : "") + '</div>' +
+        '<p class="aiwarn">Analyse générée sans accès à internet : les faits et les chiffres sont à vérifier.</p>' :
+        '<p class="aiwarn">L\'analyse par Claude n\'est pas disponible dans cette vue.</p>') + '</details>';
+  }).join("");
+  return '<h2 class="theme-title">Ouvrir le débat</h2>' +
+    '<p class="ctx">Ce test de résistance ne cherche pas à te faire changer d\'avis. Pour chaque mesure, il montre ce que les données établissent, le meilleur argument des opposants, ce qui est contesté, le risque principal et ce qui devrait changer pour revoir la mesure. Ton programme reste le tien.</p>' +
+    (fiches ? '<h3>Analyses préparées et sourcées</h3>' + fiches : "") +
+    (list ? '<h3 style="margin-top:22px">Autres mesures de ton programme</h3>' + list : "") +
+    (!fiches && !list ? '<p>Aucune mesure à tester pour l\'instant.</p>' : "") +
+    '<div class="btnrow no-print"><button class="btn ghost" data-act="bilan">Retour à mon programme</button></div>';
+}
+
+function render(){
+  var app = document.getElementById("app");
+  var solo = state.screen === "intro";
+  var main = state.screen === "intro" ? introHTML() : state.screen === "quiz" ? quizHTML() : state.screen === "bilan" ? bilanHTML() : debatHTML();
+  app.innerHTML = '<div class="shell' + (solo ? " solo" : "") + '"><main>' + main + '</main>' + (solo ? "" : balanceHTML()) + '</div>';
+  var tm = document.getElementById("topmeta");
+  if (tm) tm.textContent = state.screen === "intro" ? "" : "Ma balance se met à jour à chaque réponse";
+  if (lastFocus) { var el = document.getElementById(lastFocus); if (el) el.focus({ preventScroll:true }); }
+}
+function rerender(){
+  var y = window.scrollY;
+  render();
+  window.scrollTo(0, y);
+}
+
+/* ===================== MARKDOWN ===================== */
+function markdown(){
+  var by = programmeByTheme(), nb = notesByTheme(), b = budget(), al = activeTensions(), c = CONSTRAINTS[state.constraint];
+  var md = "# Mon programme pour la France\n\n";
+  THEMES.forEach(function(t, i){
+    if (by[i] || nb[i]) {
+      md += "## " + t + "\n\n";
+      if (by[i]) md += by[i].join(" ") + "\n\n";
+      if (nb[i]) md += "*Ma précision : " + nb[i].join(" ; ") + "*\n\n";
+    }
+  });
+  md += "## Financement\n\n";
+  md += "- Recettes et économies : " + (b.rlo === b.rhi ? fmt(b.rlo) : fmt(b.rlo) + " à " + fmt(b.rhi)) + " Md€ par an.\n";
+  md += "- Dépenses nouvelles : " + (b.dlo === b.dhi ? fmt(b.dlo) : fmt(b.dlo) + " à " + fmt(b.dhi)) + " Md€ par an.\n";
+  md += "- Solde : " + soldeText(b) + " Md€ par an (prudent à haut).\n";
+  if (b.once) md += "- Ponctuel : " + fmt(b.once) + " Md€ de cessions d'actifs affectés à la dette.\n";
+  md += "- Contrainte choisie : " + c.label + ".\n";
+  if (b.odhi) md += "- Ponctuel : " + rng([round1(b.odlo), round1(b.odhi)]) + " Md€ de coût de rachat, hors solde annuel.\n";
+  md += "- " + b.hyp + " chiffrage(s) sur " + b.tot + " reposent sur une hypothèse sans source solide.\n\n";
+  var dm = selectedOpts().filter(function(x){ return x.o.r || x.o.d || x.o.once || x.o.onced; }).map(function(x){
+    var e = [];
+    if (x.o.r) e.push("rapporte " + rng(x.o.r) + " Md€");
+    if (x.o.d) e.push("coûte " + rng(x.o.d) + " Md€");
+    if (x.o.once) e.push("ponctuel " + fmt(x.o.once) + " Md€");
+    if (x.o.onced) e.push("ponctuel, coûte " + rng(x.o.onced) + " Md€");
+    return "- " + x.o.t + " : " + e.join(", ") + " (" + (x.o.conf || "estimé") + ")." + (x.o.n ? " " + x.o.n : "");
+  });
+  if (dm.length) md += "## Détail des chiffrages\n\n" + dm.join("\n") + "\n\n";
+  if (al.length) { md += "## Points d'attention\n\n" + al.map(function(x){ return "- " + x; }).join("\n") + "\n\n"; }
+  md += "*Chiffres : ordres de grandeur annuels, octobre 2026, à vérifier.*\n";
+  return md;
+}
+
+function toast(msg){
+  var t = document.getElementById("toast");
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toast._h); toast._h = setTimeout(function(){ t.hidden = true; }, 2600);
+}
+function copyText(txt){
+  function fallback(){
+    var ta = document.createElement("textarea"); ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    var ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
+    document.body.removeChild(ta); toast(ok ? "Programme copié." : "Copie impossible : sélectionne le texte à la main.");
+  }
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(function(){ toast("Programme copié."); }, fallback); }
+    else fallback();
+  } catch (e) { fallback(); }
+}
+
+/* ===================== ANALYSE PAR CLAUDE (facultative) ===================== */
+function aiPrompt(q, op){
+  return "Tu aides une personne à tester son propre programme politique pour la France (octobre 2026). Mesure choisie : « " + op.t + " ». Question posée : « " + q.title + " ». Contexte fourni à la personne : " + q.ctx + "\n\n" +
+    "Réponds en français, sans jargon, sur un ton neutre. Donne exactement 5 points courts (2 phrases au maximum chacun), numérotés :\n" +
+    "1. Ce que les données établissent.\n2. Le meilleur argument des opposants, formulé comme ils le formuleraient eux-mêmes.\n3. Ce qui est contesté ou incertain.\n4. Le risque principal, y compris les critiques qui pourraient venir du propre camp de la personne (mise en œuvre, coût, délai).\n5. Ce qui devrait changer dans les faits pour qu'on revoie la mesure.\n\n" +
+    "Règles strictes : n'invente aucun chiffre ni aucune source ; si tu n'es pas certain, dis-le. Tu n'as pas accès à internet : signale que les faits sont à vérifier. Si les éléments penchent nettement d'un côté, dis-le au lieu de fabriquer une objection. Pas de « tu devrais » ni de morale. Ne cherche pas à changer l'avis de la personne.";
+}
+function runAI(key){
+  var parts = key.split("__"), q = QS.filter(function(x){ return x.id === parts[0]; })[0];
+  var op = q && q.opts.filter(function(x){ return x.id === parts[1]; })[0];
+  if (!q || !op || !caps.sample) return;
+  var box = document.getElementById("ai_" + key);
+  if (box) box.textContent = "Analyse en cours…";
+  var ctrl = new AbortController();
+  ai[key] = { text:"" };
+  caps.sample(aiPrompt(q, op), { cache:false, signal:ctrl.signal, onText:function(r){ ai[key].text = r.text; var b2 = document.getElementById("ai_" + key); if (b2) b2.textContent = r.text; } })
+    .then(function(r){ ai[key].text = r.text; var b2 = document.getElementById("ai_" + key); if (b2) b2.textContent = r.text; })
+    .catch(function(e){
+      var msg = e && e.code === "not_granted" ? "Autorisation refusée : l'analyse n'est pas disponible." : e && e.code === "rate_limited" ? "Trop de demandes : réessaie dans un moment." : "L'analyse a échoué : réessaie plus tard.";
+      var b2 = document.getElementById("ai_" + key); if (b2) b2.textContent = (ai[key].text ? ai[key].text + "\n\n" : "") + msg;
+    });
+}
+
+
+/* ===================== EXPORT PDF ===================== */
+function pdfSafe(s){
+  return String(s)
+    .replace(/≈/g, "env. ").replace(/−/g, "-").replace(/…/g, "...").replace(/[’‘]/g, "'").replace(/[“”]/g, '"')
+    .replace(/[–—]/g, "-").replace(/[\u202F\u00A0]/g, " ").replace(/→/g, "->").replace(/≥/g, ">=").replace(/≤/g, "<=")
+    ;
+}
+function buildPdf(){
+  var J = window.jspdf && window.jspdf.jsPDF;
+  if (!J) return null;
+  var doc = new J({ unit:"mm", format:"a4" });
+  var W = 210, H = 297, M = 18, CWm = W - 2 * M, y = M;
+  var INK = [29,36,48], MUTED = [95,107,122], POS = [14,124,134], NEG = [194,87,12], RULE = [214,217,222];
+  function ensure(h){ if (y + h > H - 18) { doc.addPage(); y = M; } }
+  function para(str, size, style, color, gap, indent){
+    doc.setFont("helvetica", style || "normal"); doc.setFontSize(size); doc.setTextColor.apply(doc, color || INK);
+    var x = M + (indent || 0);
+    var lines = doc.splitTextToSize(pdfSafe(str), CWm - (indent || 0));
+    var lh = size * 0.3528 * 1.38;
+    lines.forEach(function(l){ ensure(lh); doc.text(l, x, y + size * 0.3528 * 0.92); y += lh; });
+    y += (gap || 0);
+  }
+  function heading(str){ ensure(14); y += 3; para(str, 12.5, "bold", INK, 1); }
+
+  para("Mon programme pour la France", 21, "bold", INK, 1.5);
+  para("Version de travail, octobre 2026. Établi avec l'outil « Construis ton programme ».", 9, "normal", MUTED, 4);
+
+  var b = budget(), c = CONSTRAINTS[state.constraint], target = c ? c.target : null, any = selectedOpts().length > 0;
+  heading("Le budget en un coup d'œil");
+  // jauge
+  var gx = M, gw = CWm, gy = y + 8, lo = Math.min(-20, Math.floor((b.slo - 10) / 10) * 10), hi = Math.max(80, Math.ceil((b.shi + 10) / 10) * 10, target ? target + 10 : 0);
+  var px = function(v){ return gx + (Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo) * gw; };
+  ensure(26);
+  doc.setDrawColor.apply(doc, RULE); doc.setLineWidth(0.3); doc.line(gx, gy, gx + gw, gy);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor.apply(doc, MUTED);
+  for (var v = lo; v <= hi; v += 20) { doc.line(px(v), gy - 1.5, px(v), gy + 1.5); doc.text(String(v), px(v), gy + 6, { align:"center" }); }
+  if (any) {
+    var a = Math.min(b.slo, b.shi), z = Math.max(b.slo, b.shi);
+    var x1 = px(a), x2 = Math.max(px(z), x1 + 1.2), zx = px(0);
+    if (a < 0) { doc.setFillColor.apply(doc, NEG); doc.rect(x1, gy - 2.5, Math.min(x2, zx) - x1, 5, "F"); }
+    if (z > 0) { doc.setFillColor.apply(doc, POS); var sx = Math.max(x1, zx); doc.rect(sx, gy - 2.5, x2 - sx, 5, "F"); }
+  }
+  doc.setDrawColor.apply(doc, INK); doc.setLineWidth(0.6); doc.line(px(0), gy - 5, px(0), gy + 4);
+  doc.setFontSize(7); doc.setTextColor.apply(doc, INK); doc.text("0", px(0) + 1, gy - 4.2);
+  if (target) { doc.setDrawColor.apply(doc, MUTED); doc.setLineWidth(0.4); doc.setLineDashPattern([1.2, 1.2], 0); doc.line(px(target), gy - 5, px(target), gy + 4); doc.setLineDashPattern([], 0); doc.setTextColor.apply(doc, MUTED); doc.text("cible " + target, px(target) + 1, gy - 4.2); }
+  y = gy + 10;
+  para("Solde annuel : " + soldeText(b) + " Md€ par an (prudent à haut)", 11, "bold", (b.shi < 0 ? NEG : POS), 1);
+  para("Rapporte (recettes et économies) : " + (b.rlo === b.rhi ? fmt(b.rlo) : fmt(b.rlo) + " à " + fmt(b.rhi)) + " Md€. Coûte (dépenses nouvelles) : " + (b.dlo === b.dhi ? fmt(b.dlo) : fmt(b.dlo) + " à " + fmt(b.dhi)) + " Md€." +
+    (b.once ? " Ponctuel : " + fmt(b.once) + " Md€ de cessions affectés à la dette." : "") + (b.odhi ? " Ponctuel : " + rng([round1(b.odlo), round1(b.odhi)]) + " Md€ de coût de rachat, hors solde annuel." : ""), 9.5, "normal", INK, 1);
+  para("Contrainte choisie : " + c.label + ". " + b.hyp + " chiffrage(s) sur " + b.tot + " reposent sur une hypothèse sans source solide.", 9, "normal", MUTED, 3);
+
+  var by = programmeByTheme(), nb = notesByTheme();
+  THEMES.forEach(function(t, i){
+    if (by[i] || nb[i]) {
+      heading(t);
+      if (by[i]) para(by[i].join(" "), 10, "normal", INK, 1);
+      if (nb[i]) para("Ma précision : " + nb[i].join(" ; "), 9.5, "italic", MUTED, 1);
+    }
+  });
+  if (!Object.keys(by).length) para("Aucune mesure choisie pour l'instant.", 10, "normal", MUTED, 2);
+
+  var det = selectedOpts().filter(function(x){ return x.o.r || x.o.d || x.o.once || x.o.onced; });
+  if (det.length) {
+    heading("Détail des chiffrages");
+    det.forEach(function(x){
+      var e = [];
+      if (x.o.r) e.push("rapporte " + rng(x.o.r) + " Md€");
+      if (x.o.d) e.push("coûte " + rng(x.o.d) + " Md€");
+      if (x.o.once) e.push("ponctuel " + fmt(x.o.once) + " Md€");
+      if (x.o.onced) e.push("ponctuel, coûte " + rng(x.o.onced) + " Md€");
+      para("- " + x.o.t + " : " + e.join(", ") + " (" + (x.o.conf || "estimé") + ")." + (x.o.n ? " " + x.o.n : ""), 8.5, "normal", INK, 0.6, 2);
+    });
+  }
+  var al = activeTensions();
+  if (al.length) {
+    heading("Points d'attention");
+    al.forEach(function(x){ para("- " + x, 9.5, "normal", INK, 0.8, 2); });
+    para("- Les dépenses démarrent avant les économies, et les recrutements prennent des années.", 9.5, "normal", INK, 0.8, 2);
+  }
+  para("Montants : ordres de grandeur annuels, par rapport à la politique actuelle, octobre 2026, à vérifier avant tout usage.", 8.5, "italic", MUTED, 0);
+
+  var n = doc.getNumberOfPages();
+  for (var i = 1; i <= n; i++) {
+    doc.setPage(i); doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor.apply(doc, MUTED);
+    doc.setDrawColor.apply(doc, RULE); doc.setLineWidth(0.2); doc.line(M, H - 14, W - M, H - 14);
+    doc.text("Mon programme pour la France", M, H - 9); doc.text("Page " + i + " sur " + n, W - M, H - 9, { align:"right" });
+  }
+  return doc;
+}
+function makePdf(){
+  if (!canDownload()) { toast("Téléchargement indisponible ici : utilise « Copier en Markdown »."); return; }
+  var doc = null;
+  try { doc = buildPdf(); } catch (e) { doc = null; }
+  if (!doc) { toast("Le générateur de PDF n'est pas disponible : utilise « Copier en Markdown »."); return; }
+  var blob = doc.output("blob");
+  saveFile("mon-programme.pdf", blob, "application/pdf").then(
+    function(){ toast("PDF enregistré."); },
+    function(e){ toast(e && e.code === "declined" ? "Téléchargement annulé." : "Téléchargement impossible ici."); });
+}
+
+/* ===================== ÉVÉNEMENTS ===================== */
+function setAnswer(q, id, checked){
+  var cur = (state.answers[q.id] || []).slice();
+  if (q.type === "single") { cur = [id]; }
+  else {
+    var op = q.opts.filter(function(x){ return x.id === id; })[0];
+    var i = cur.indexOf(id);
+    if (checked && i < 0) {
+      if (op && op.group) cur = cur.filter(function(x){ var o2 = q.opts.filter(function(y){ return y.id === x; })[0]; return !(o2 && o2.group === op.group); });
+      cur.push(id);
+    }
+    if (!checked && i >= 0) cur.splice(i, 1);
+  }
+  state.answers[q.id] = cur;
+  saveState();
+}
+
+document.addEventListener("change", function(e){
+  var t = e.target;
+  if (!t) return;
+  if (t.name === "constraint") { state.constraint = t.value; saveState(); lastFocus = t.id; rerender(); return; }
+  if (t.name === "path") { state.path = t.value; saveState(); lastFocus = t.id; rerender(); return; }
+  if (t.getAttribute && t.getAttribute("data-act") === "goto") { state.qi = parseInt(t.value, 10) || 0; lastFocus = null; render(); window.scrollTo(0, 0); return; }
+  if (t.type === "radio" || t.type === "checkbox") {
+    var qid = (t.id || "").split("__")[0];
+    var q = QS.filter(function(x){ return x.id === qid; })[0];
+    if (q) { setAnswer(q, t.value, t.checked); lastFocus = t.id; rerender(); }
+  }
+});
+document.addEventListener("input", function(e){
+  var t = e.target;
+  if (t && t.getAttribute && t.getAttribute("data-note")) { state.notes[t.getAttribute("data-note")] = t.value; saveState(); }
+});
+document.addEventListener("click", function(e){
+  var el = e.target.closest ? e.target.closest("[data-act]") : null;
+  if (!el || el.tagName === "SELECT") return;
+  var act = el.getAttribute("data-act");
+  lastFocus = null;
+  if (act === "start") { state.answers = {}; state.notes = {}; state.saved = false; state.screen = "quiz"; state.qi = 0; saveState(); render(); window.scrollTo(0, 0); }
+  else if (act === "resume") { state.screen = "quiz"; state.qi = 0; render(); window.scrollTo(0, 0); }
+  else if (act === "next") { state.qi += 1; render(); window.scrollTo(0, 0); }
+  else if (act === "prev") { state.qi = Math.max(0, state.qi - 1); render(); window.scrollTo(0, 0); }
+  else if (act === "bilan") { state.screen = "bilan"; render(); window.scrollTo(0, 0); }
+  else if (act === "debat") { state.screen = "debat"; render(); window.scrollTo(0, 0); }
+  else if (act === "edit") { state.screen = "quiz"; state.qi = 0; render(); window.scrollTo(0, 0); }
+  else if (act === "pass") { state.answers[el.getAttribute("data-q")] = []; saveState(); rerender(); }
+  else if (act === "toggle-gauge") { var b = document.getElementById("balance"); var open = b.classList.toggle("open"); el.setAttribute("aria-expanded", open ? "true" : "false"); }
+  else if (act === "copy") { copyText(markdown()); }
+  else if (act === "download") {
+    if (canDownload()) { saveFile("mon-programme.md", markdown(), "text/markdown").then(function(){ toast("Fichier enregistré."); }, function(){ toast("Téléchargement annulé."); }); }
+  }
+  else if (act === "pdf") { makePdf(); }
+  else if (act === "ai") { runAI(el.getAttribute("data-k")); }
+});
+
+/* ===================== DÉMARRAGE ===================== */
+loadState();
+render();
+(function initCaps(){
+  try {
+    if (typeof claude !== "undefined" && claude && claude.use) {
+      claude.use("sample").then(function(s){ caps.sample = s || null; if (state.screen === "debat") rerender(); }, function(){});
+      claude.use("downloads").then(function(d){ caps.downloads = d || null; if (state.screen === "bilan") rerender(); }, function(){});
+    }
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>
